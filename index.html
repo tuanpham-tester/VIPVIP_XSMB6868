@@ -105,6 +105,9 @@
         <button id="tabBtnOverview" data-tab="overview" class="nav-tab-btn px-3 py-1.5 rounded-lg font-semibold bg-rose-600 text-white transition">
           Bảng Kết Quả & Dự Đoán
         </button>
+        <button id="tabBtnAudit" data-tab="audit" class="nav-tab-btn px-3 py-1.5 rounded-lg font-medium text-emerald-400 hover:text-white transition flex items-center gap-1">
+          <span>📊 Đối Soát Thắng / Thua</span>
+        </button>
         <button id="tabBtnGraph" data-tab="graph" class="nav-tab-btn px-3 py-1.5 rounded-lg font-medium text-amber-300 hover:text-white transition flex items-center gap-1">
           <span>🕸️ Đồ Thị Cầu Kết Nối</span>
         </button>
@@ -648,6 +651,133 @@
       </div>
     </div>
 
+    <!-- TAB 4 (MỚI): AUDIT & BACKTESTING ENGINE - THỐNG KÊ THẮNG / THUA LỊCH SỬ -->
+    <div id="tabContentAudit" class="hidden space-y-6">
+      
+      <!-- KPI Strip: Hiệu Suất Kiểm Định Thực Tế -->
+      <section class="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+        <div class="glass-card rounded-2xl p-4 border-l-4 border-l-amber-500">
+          <div class="flex items-center justify-between text-xs text-slate-400">
+            <span>Dàn Đề 27 Số (270k)</span>
+            <span class="text-amber-400 font-bold font-mono-num">Lý thuyết: 27%</span>
+          </div>
+          <div id="auditDanDeWinrate" class="text-2xl font-extrabold text-amber-400 mt-1 font-mono-num">--%</div>
+          <div id="auditDanDeHits" class="text-xs text-slate-400 mt-1">
+            Trúng: <strong class="text-white">--/-- kỳ</strong> • Lãi ròng: <span id="auditDanDePnL" class="font-bold text-emerald-400">--</span>
+          </div>
+        </div>
+
+        <div class="glass-card rounded-2xl p-4 border-l-4 border-l-rose-500">
+          <div class="flex items-center justify-between text-xs text-slate-400">
+            <span>Bạch Thủ Lô (10đ)</span>
+            <span class="text-rose-400 font-bold font-mono-num">Lý thuyết: 23.8%</span>
+          </div>
+          <div id="auditBtlWinrate" class="text-2xl font-extrabold text-rose-400 mt-1 font-mono-num">--%</div>
+          <div id="auditBtlHits" class="text-xs text-slate-400 mt-1">
+            Nổ: <strong class="text-white">-- kỳ (-- nháy)</strong> • PnL: <span id="auditBtlPnL" class="font-bold text-emerald-400">--</span>
+          </div>
+        </div>
+
+        <div class="glass-card rounded-2xl p-4 border-l-4 border-l-purple-500">
+          <div class="flex items-center justify-between text-xs text-slate-400">
+            <span>Dàn Đề 8 Số & BTD</span>
+            <span class="text-purple-400 font-bold font-mono-num">Lý thuyết: 8%</span>
+          </div>
+          <div id="auditDe8Winrate" class="text-2xl font-extrabold text-purple-400 mt-1 font-mono-num">--%</div>
+          <div id="auditDe8Hits" class="text-xs text-slate-400 mt-1">
+            Ăn Đề 8s: <strong class="text-white">-- kỳ</strong> • Ăn BTD: <span id="auditBtdHits" class="font-bold text-amber-300">-- kỳ</span>
+          </div>
+        </div>
+
+        <div class="glass-card rounded-2xl p-4 border-l-4 border-l-pink-500">
+          <div class="flex items-center justify-between text-xs text-slate-400">
+            <span>Bộ 3 Càng VIP</span>
+            <span class="text-pink-400 font-bold font-mono-num">Đề & Dàn 6S Lô</span>
+          </div>
+          <div id="audit3CangWinrate" class="text-2xl font-extrabold text-pink-400 mt-1 font-mono-num">--%</div>
+          <div id="audit3CangHits" class="text-xs text-slate-400 mt-1">
+            Nổ 3C Đề: <strong class="text-white">-- kỳ</strong> • 3C Lô: <span id="audit3CangLotoHits" class="font-bold text-pink-300">-- kỳ</span>
+          </div>
+          <div class="text-[11px] text-slate-400 mt-1 pt-1 border-t border-slate-800 flex items-center justify-between">
+            <span>PnL Dàn 6S (138k):</span>
+            <span id="audit3CangLoPnL" class="font-mono-num font-bold text-emerald-400">--</span>
+          </div>
+        </div>
+
+        <div class="glass-card rounded-2xl p-4 border-l-4 border-l-emerald-500 col-span-2 lg:col-span-1">
+          <div class="flex items-center justify-between text-xs text-slate-400">
+            <span>Lô Về ≥ 2 Nháy</span>
+            <span class="text-emerald-400 font-bold font-mono-num">Lý thuyết: 2.95%</span>
+          </div>
+          <div id="auditTwoHitRate" class="text-2xl font-extrabold text-emerald-400 mt-1 font-mono-num">--%</div>
+          <div id="auditTwoHitSub" class="text-xs text-slate-400 mt-1">
+            Chuẩn xác: <strong class="text-white">--/-- ứng viên</strong>
+          </div>
+        </div>
+      </section>
+
+      <!-- Main Audit Table Panel -->
+      <div class="glass-card rounded-3xl p-5 border border-slate-800">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800">
+          <div>
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-semibold mb-1">
+              <span>🔍 Walk-Forward Backtesting Engine (Khung TK: <span id="auditWindowSizeBadge" class="font-bold text-amber-300">30 kỳ</span>)</span>
+            </div>
+            <h3 class="text-lg font-bold text-white">Bảng Đối Soát Chi Tiết: Dự Đoán Của App vs Kết Quả Thực Tế Từng Ngày</h3>
+            <p class="text-xs text-slate-400 mt-0.5">
+              Hệ thống dùng đúng số lượng kỳ quá khứ từ Khung TK để mô phỏng lại bộ số dự đoán cho từng ngày, đối soát Đề 27 số, BTL và 3 Càng VIP.
+            </p>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <input id="auditSearchQuery" type="text" placeholder="Tìm số, 3 càng, ngày..." class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:border-emerald-500 w-48" />
+            <select id="auditFilterMode" class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-slate-200 focus:outline-none">
+              <option value="all">Xem tất cả các kỳ kiểm định</option>
+              <option value="win27">Chỉ xem kỳ Dàn Đề 27 Thắng (Ăn Đề)</option>
+              <option value="winBtl">Chỉ xem kỳ BTL Thắng (Ăn Lô)</option>
+              <option value="win3CangDe">★ Chỉ xem kỳ 3 Càng ĐỀ Thắng</option>
+              <option value="win3CangLo">★ Chỉ xem kỳ Dàn 6S 3 Càng LÔ Thắng (Nổ Nháy)</option>
+              <option value="winBoth">★ Kỳ Thắng Cả Lô & Đề 27</option>
+              <option value="lossBoth">Chỉ xem kỳ Trượt Cả Hai</option>
+            </select>
+            <button id="btnRerunAudit" class="px-3.5 py-1.5 rounded-xl bg-emerald-600/30 hover:bg-emerald-600/50 border border-emerald-500/50 text-emerald-300 text-xs font-bold transition flex items-center gap-1 cursor-pointer">
+              <span>🔄 Chạy Lại Đối Soát</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Audit Table -->
+        <div class="mt-4 overflow-x-auto custom-scrollbar max-h-[620px]">
+          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+            <thead class="sticky top-0 bg-slate-900 text-slate-300 border-b border-slate-700 z-10">
+              <tr>
+                <th class="py-3 px-3 font-bold text-center">Kỳ Mở Thưởng</th>
+                <th class="py-3 px-3 font-bold text-center">Kết Quả Thật (3C / ĐB)</th>
+                <th class="py-3 px-3 font-bold text-center">Bộ Số Đã Dự Đoán (Lô & Đề)</th>
+                <th class="py-3 px-3 font-bold text-center">Bộ 3 Càng VIP Đã Đánh</th>
+                <th class="py-3 px-3 font-bold text-center">Chi Tiết Dàn Đề 27 Số</th>
+                <th class="py-3 px-3 font-bold text-center">Kết Quả So Khớp</th>
+                <th class="py-3 px-3 font-bold text-right">PnL Dàn Đề 27</th>
+                <th class="py-3 px-3 font-bold text-right">PnL Lô BTL</th>
+                <th class="py-3 px-3 font-bold text-right text-pink-300">PnL Dàn 6S 3C Lô</th>
+                <th class="py-3 px-3 font-bold text-center">Thao Tác</th>
+              </tr>
+            </thead>
+            <tbody id="auditTableBody" class="divide-y divide-slate-800/80 font-mono-num">
+              <!-- Render by JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- PnL Disclaimer & Strategy Insight -->
+        <div class="mt-4 pt-3 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-2">
+          <span>* PnL cược chuẩn: Đề 27 số (270k ăn 990k), BTL 10đ (270k ăn 990k/nháy), Dàn 6 số 3 Càng Lô (6 số × 23k = 138k/ngày, ăn 960k/nháy).</span>
+          <span class="text-amber-400 font-semibold">Tự động đối soát theo dữ liệu thực từ xskt.com.vn theo Khung TK đã chọn</span>
+        </div>
+      </div>
+
+    </div>
+
     <!-- TAB 2: PROBABILITY CHARTS & VISUAL ANALYTICS -->
     <div id="tabContentAnalytics" class="hidden space-y-6">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -814,6 +944,74 @@
         <button id="btnResetDefaultData" class="px-3 py-1.5 rounded-lg bg-rose-950/60 hover:bg-rose-900/70 border border-rose-800/60 text-rose-300 font-semibold">
           Khôi Phục Chuẩn XSKT Gốc
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Chi Tiết Bộ Số Đã Đánh Trong Quá Khứ -->
+  <div id="auditDetailModal" class="fixed inset-0 z-50 hidden bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="glass-card rounded-3xl max-w-xl w-full p-6 border border-amber-500/40 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div>
+          <span class="px-2 py-0.5 text-[11px] rounded bg-amber-500/20 text-amber-300 font-bold uppercase tracking-wider">Lịch Sử Bộ Số Đã Lên</span>
+          <h3 id="auditModalTitle" class="text-lg font-bold text-white mt-1">Bộ Số Dự Đoán Ngày --/--/----</h3>
+        </div>
+        <button id="btnCloseAuditModal" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-bold">✕</button>
+      </div>
+
+      <div class="space-y-4 text-xs">
+        <!-- Thông tin kết quả thật -->
+        <div class="p-3 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center justify-between">
+          <div>
+            <span class="text-slate-400">Kết quả xổ số thực tế ngày này:</span>
+            <div id="auditModalActualText" class="text-sm font-bold text-white mt-0.5">Đặc Biệt: <span class="text-rose-400 font-mono-num">--</span> • Giải Nhất: <span class="text-slate-200 font-mono-num">--</span></div>
+          </div>
+          <div id="auditModalResultBadge">--</div>
+        </div>
+
+        <!-- Bạch thủ lô & Đề -->
+        <div class="grid grid-cols-2 gap-3">
+          <div class="p-3 rounded-2xl bg-slate-900 border border-rose-500/30">
+            <div class="text-rose-400 font-bold mb-1">Bạch Thủ Lô (10đ)</div>
+            <div class="text-2xl font-mono-num font-extrabold text-white" id="auditModalBtlNumber">--</div>
+            <div class="text-slate-400 mt-1" id="auditModalBtlSub">Lót: -- • Nổ: --</div>
+          </div>
+          <div class="p-3 rounded-2xl bg-slate-900 border border-amber-500/30">
+            <div class="text-amber-400 font-bold mb-1">Bạch Thủ Đề & Dàn 8s</div>
+            <div class="text-2xl font-mono-num font-extrabold text-amber-300" id="auditModalBtdNumber">--</div>
+            <div class="text-slate-400 mt-1" id="auditModalBtdSub">Dàn 8s: --</div>
+          </div>
+        </div>
+
+        <!-- 3 Càng VIP Modal Card -->
+        <div class="p-3 rounded-2xl bg-slate-900 border border-pink-500/30">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-pink-400 font-bold">Bộ Số 3 Càng VIP Đã Đánh:</span>
+            <span id="auditModal3CangBadge" class="text-xs font-mono-num font-bold">--</span>
+          </div>
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <div>3 Càng Đề chính: <strong id="auditModal3CangDe" class="text-pink-300 font-mono-num text-sm">---</strong></div>
+            <div>3 Càng Lô: <strong id="auditModal3CangLo" class="text-white font-mono-num text-sm">---</strong></div>
+          </div>
+          <div class="mt-1.5 text-[11px] text-slate-400">
+            Tổ hợp 6 số 3C: <span id="auditModal3CangCombos" class="font-mono-num text-pink-200 font-semibold">---</span>
+          </div>
+        </div>
+
+        <!-- 27 Số Dàn Đề -->
+        <div class="p-4 rounded-2xl bg-slate-950/80 border border-amber-500/40">
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-bold text-amber-300">Toàn Bộ 27 Số Dàn Đề Đã Lên:</span>
+            <span id="auditModalDanDeMatchBadge" class="text-xs font-mono-num font-bold">--</span>
+          </div>
+          <div id="auditModalDanDeGrid" class="grid grid-cols-9 gap-1.5 font-mono-num text-center"></div>
+          <div class="mt-3 pt-2.5 border-t border-slate-800 flex items-center justify-between">
+            <span class="text-slate-400">Sao chép nhanh dàn số này:</span>
+            <button id="btnCopyAuditDanDe" class="px-3 py-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold transition cursor-pointer">
+              Sao chép 27 số
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1144,6 +1342,7 @@
     let currentWindowSize = 30;
     let currentStats = null;
     let filterDanDeOnlyActive = false;
+    let auditRecords = []; // Lưu trữ kết quả đối soát backtest
     let charts = {
       topFreq: null,
       twoHit: null,
@@ -1712,6 +1911,448 @@
     }
 
     // =========================================================================
+    // 4B. WALK-FORWARD BACKTEST & ĐỐI SOÁT DỰ ĐOÁN VS THỰC TẾ
+    // =========================================================================
+    function runBacktestAuditEngine() {
+      if (!xsmbHistory || xsmbHistory.length < 5) return;
+      const records = [];
+      const strategy = document.getElementById("strategyModeSelect")?.value || "ensemble";
+      
+      // Lấy khung thời gian thống kê đã chọn (10, 20, 30, hoặc 90 kỳ)
+      const windowSelectVal = Number(document.getElementById("windowRangeSelect")?.value || 30);
+      const windowSize = Math.max(5, Math.min(xsmbHistory.length - 1, windowSelectVal));
+
+      const badgeEl = document.getElementById("auditWindowSizeBadge");
+      if (badgeEl) badgeEl.textContent = `${windowSelectVal} kỳ (${windowSize} kỳ kiểm định)`;
+
+      // Chạy backtest trên đúng số kỳ thuộc Khung TK đã chọn
+      for (let i = 0; i < windowSize; i++) {
+        const actualDraw = xsmbHistory[i]; // Kỳ thực tế cần kiểm định
+        // Trích xuất lịch sử trước kỳ đó với kích thước mẫu tỷ lệ thuận với windowSelectVal
+        const pastSlice = xsmbHistory.slice(i + 1, i + 1 + Math.min(windowSelectVal, xsmbHistory.length - i - 1));
+        if (pastSlice.length < 4) break;
+
+        // Sinh dự đoán giả lập cho ngày actualDraw từ quá khứ
+        const simStats = computeStatistics(pastSlice, strategy);
+        const allNums = Object.values(simStats.numStats);
+
+        // 1. Dự đoán BTL
+        const btlSorted = [...allNums].sort((a, b) => b.btlScore - a.btlScore || b.probAtLeast1 - a.probAtLeast1);
+        const predBTL = btlSorted[0].num;
+        const predBTL_backup = [btlSorted[1].num, btlSorted[2].num];
+
+        // 2. Dự đoán BTD & Dàn 8 số
+        const btdSorted = [...allNums].sort((a, b) => b.btdScore - a.btdScore);
+        const predBTD = btdSorted[0].num;
+        const predDe8 = btdSorted.slice(0, 8).map(x => x.num);
+
+        // 3. Dự đoán Dàn Đề 27 Số
+        const predDanDe27 = simStats.danDe27List;
+
+        // 4. Dự đoán Ứng viên 2 Nháy
+        const twoHitSorted = [...allNums].sort((a, b) => b.probAtLeast2 - a.probAtLeast2 || b.multiHitDays - a.multiHitDays);
+        const predTwoHit = twoHitSorted[0].num;
+
+        // 5. Dự đoán 3 Càng VIP
+        const cangScores = simStats.cangHundredsCounts
+          .map((cnt, digit) => ({ digit, cnt }))
+          .sort((a, b) => b.cnt - a.cnt);
+        const bestCang1 = cangScores[0].digit;
+        const bestCang2 = cangScores[1].digit;
+        const bestCang3 = cangScores[2].digit;
+
+        const pred3CangDe = `${bestCang1}${predBTD}`;
+        const pred3CangLo = `${bestCang1}${predBTL}`;
+        const pred3CangCombos = [
+          `${bestCang1}${predBTD}`,
+          `${bestCang2}${predBTD}`,
+          `${bestCang3}${predBTD}`,
+          `${bestCang1}${predBTL}`,
+          `${bestCang2}${predBTL}`,
+          `${bestCang1}${predDe8[1] || predBTD}`
+        ];
+
+        // 6. Kết quả thực tế kỳ đó
+        const actualSpecial = actualDraw.special;
+        const actualDe = actualSpecial.slice(-2);
+        const actual3CangDe = actualSpecial.length >= 3 ? actualSpecial.slice(-3) : "";
+        const actualLotos = getLotosOfDraw(actualDraw);
+        const actualThreeDigits = getThreeDigitsOfDraw(actualDraw); // 23 giải có từ 3 chữ số trở lên
+        
+        // Đếm số nháy thực tế
+        const btlHitCount = actualLotos.filter(x => x === predBTL).length;
+        const twoHitActualCount = actualLotos.filter(x => x === predTwoHit).length;
+
+        // Kiểm tra trúng/thua 3 Càng Đề
+        const is3CangDeWin = actual3CangDe === pred3CangDe || pred3CangCombos.includes(actual3CangDe);
+        const hit3CangDeNum = is3CangDeWin ? actual3CangDe : null;
+
+        // Kiểm tra trúng/thua Dàn 6 số 3 Càng Lô:
+        // Đếm tổng số nháy nổ của toàn bộ 6 con 3 càng trong 23 giải loto từ 3 chữ số trở lên
+        const comboHitsList = [];
+        let total3CangLoHits = 0;
+        pred3CangCombos.forEach(cNum => {
+          const hits = actualThreeDigits.filter(x => x === cNum).length;
+          if (hits > 0) {
+            comboHitsList.push(`${cNum} (${hits}n)`);
+            total3CangLoHits += hits;
+          }
+        });
+        const is3CangLoWin = total3CangLoHits > 0;
+        const main3CangLoHits = actualThreeDigits.filter(x => x === pred3CangLo).length;
+
+        // Kiểm tra trúng/thua Đề & Lô
+        const isDanDe27Win = predDanDe27.includes(actualDe);
+        const isBtlWin = btlHitCount >= 1;
+        const isBtdWin = predBTD === actualDe;
+        const isDe8Win = predDe8.includes(actualDe);
+        const isTwoHitWin = twoHitActualCount >= 2;
+
+        // Tính PnL tiền cược:
+        // - Đề 27: 270k ăn 990k (lãi 720k / thua 270k)
+        // - Lô BTL 10đ: 270k ăn 990k/nháy
+        // - Dàn 6 số 3 Càng Lô: 6 số x 23k = 138.000đ/ngày, ăn 960.000đ/nháy
+        const pnlDanDe27 = isDanDe27Win ? 720000 : -270000;
+        const pnlBtl = btlHitCount > 0 ? (btlHitCount * 990000 - 270000) : -270000;
+        const pnl3CangLo = total3CangLoHits > 0 ? (total3CangLoHits * 960000 - 138000) : -138000;
+
+        records.push({
+          date: actualDraw.date,
+          dayName: actualDraw.dayName,
+          province: actualDraw.province,
+          actualSpecial,
+          actualDe,
+          actual3CangDe,
+          actualPrize1: actualDraw.prize1,
+          predBTL,
+          predBTL_backup,
+          btlHitCount,
+          isBtlWin,
+          predBTD,
+          predDe8,
+          isBtdWin,
+          isDe8Win,
+          predDanDe27,
+          isDanDe27Win,
+          predTwoHit,
+          twoHitActualCount,
+          isTwoHitWin,
+          pred3CangDe,
+          pred3CangLo,
+          pred3CangCombos,
+          is3CangDeWin,
+          hit3CangDeNum,
+          is3CangLoWin,
+          main3CangLoHits,
+          total3CangLoHits,
+          comboHitsList,
+          pnlDanDe27,
+          pnlBtl,
+          pnl3CangLo
+        });
+      }
+
+      auditRecords = records;
+      renderAuditSummaryAndTable();
+    }
+
+    function renderAuditSummaryAndTable() {
+      if (!auditRecords || !auditRecords.length) return;
+
+      // 1. Lọc danh sách theo đúng Filter Mode & Ô tìm kiếm
+      const filterMode = document.getElementById("auditFilterMode")?.value || "all";
+      const searchQuery = (document.getElementById("auditSearchQuery")?.value || "").trim().toLowerCase();
+
+      let filteredRecords = auditRecords.filter(r => {
+        // Lọc theo chế độ Thắng/Thua
+        if (filterMode === "win27" && !r.isDanDe27Win) return false;
+        if (filterMode === "winBtl" && !r.isBtlWin) return false;
+        if (filterMode === "win3CangDe" && !r.is3CangDeWin) return false;
+        if (filterMode === "win3CangLo" && !r.is3CangLoWin) return false;
+        if (filterMode === "winBoth" && (!r.isDanDe27Win || !r.isBtlWin)) return false;
+        if (filterMode === "lossBoth" && (r.isDanDe27Win || r.isBtlWin)) return false;
+
+        // Lọc theo ô tìm kiếm (tìm ngày, giải ĐB, 3 càng, BTL, hoặc số trong dàn 27)
+        if (searchQuery) {
+          const matchDate = r.date.includes(searchQuery) || formatDateVN(r.date).includes(searchQuery);
+          const matchSpecial = r.actualSpecial.includes(searchQuery) || r.actualDe.includes(searchQuery);
+          const match3C = r.actual3CangDe.includes(searchQuery) || r.pred3CangDe.includes(searchQuery) || r.pred3CangLo.includes(searchQuery);
+          const matchBtl = r.predBTL.includes(searchQuery);
+          const matchBtd = r.predBTD.includes(searchQuery);
+          const matchDanDe = r.predDanDe27.some(num => num.includes(searchQuery));
+          if (!matchDate && !matchSpecial && !match3C && !matchBtl && !matchBtd && !matchDanDe) return false;
+        }
+
+        return true;
+      });
+
+      const total = filteredRecords.length;
+
+      // 2. Tính toán lại KPI theo đúng tập dữ liệu đang được lọc
+      if (total > 0) {
+        const danDeWins = filteredRecords.filter(r => r.isDanDe27Win).length;
+        const danDeRate = ((danDeWins / total) * 100).toFixed(1);
+        const totalDanDePnL = filteredRecords.reduce((sum, r) => sum + r.pnlDanDe27, 0);
+
+        const btlWins = filteredRecords.filter(r => r.isBtlWin).length;
+        const btlTotalHits = filteredRecords.reduce((sum, r) => sum + r.btlHitCount, 0);
+        const btlRate = ((btlWins / total) * 100).toFixed(1);
+        const totalBtlPnL = filteredRecords.reduce((sum, r) => sum + r.pnlBtl, 0);
+
+        const de8Wins = filteredRecords.filter(r => r.isDe8Win).length;
+        const de8Rate = ((de8Wins / total) * 100).toFixed(1);
+        const btdWins = filteredRecords.filter(r => r.isBtdWin).length;
+
+        // Thống kê 3 Càng VIP: tách riêng 3 Càng Đề và 3 Càng Lô
+        const win3CangDeCount = filteredRecords.filter(r => r.is3CangDeWin).length;
+        const win3CangLoDays = filteredRecords.filter(r => r.is3CangLoWin).length;
+        const total3CangLoHits = filteredRecords.reduce((sum, r) => sum + r.total3CangLoHits, 0);
+        const threeCangLoRate = ((win3CangLoDays / total) * 100).toFixed(1);
+        const total3CangLoPnL = filteredRecords.reduce((sum, r) => sum + r.pnl3CangLo, 0);
+
+        const twoHitWins = filteredRecords.filter(r => r.isTwoHitWin).length;
+        const twoHitRate = ((twoHitWins / total) * 100).toFixed(1);
+
+        const elDanDeRate = document.getElementById("auditDanDeWinrate");
+        if (elDanDeRate) elDanDeRate.textContent = `${danDeRate}%`;
+        const elDanDeHits = document.getElementById("auditDanDeHits");
+        if (elDanDeHits) {
+          elDanDeHits.innerHTML = `Trúng: <strong class="text-white">${danDeWins}/${total} kỳ</strong> • Lãi ròng: <span class="font-bold ${totalDanDePnL >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${totalDanDePnL >= 0 ? '+' : ''}${totalDanDePnL.toLocaleString('vi-VN')}đ</span>`;
+        }
+
+        const elBtlRate = document.getElementById("auditBtlWinrate");
+        if (elBtlRate) elBtlRate.textContent = `${btlRate}%`;
+        const elBtlHits = document.getElementById("auditBtlHits");
+        if (elBtlHits) {
+          elBtlHits.innerHTML = `Nổ: <strong class="text-white">${btlWins} kỳ (${btlTotalHits} nháy)</strong> • PnL: <span class="font-bold ${totalBtlPnL >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${totalBtlPnL >= 0 ? '+' : ''}${totalBtlPnL.toLocaleString('vi-VN')}đ</span>`;
+        }
+
+        const elDe8Rate = document.getElementById("auditDe8Winrate");
+        if (elDe8Rate) elDe8Rate.textContent = `${de8Rate}%`;
+        const elDe8Hits = document.getElementById("auditDe8Hits");
+        if (elDe8Hits) {
+          elDe8Hits.innerHTML = `Ăn Đề 8s: <strong class="text-white">${de8Wins}/${total} kỳ</strong> • Ăn BTD: <span class="font-bold text-amber-300">${btdWins} kỳ</span>`;
+        }
+
+        // Cập nhật KPI 3 Càng VIP
+        const el3CangRate = document.getElementById("audit3CangWinrate");
+        if (el3CangRate) el3CangRate.textContent = `${threeCangLoRate}%`;
+        const el3CangHits = document.getElementById("audit3CangHits");
+        if (el3CangHits) {
+          el3CangHits.innerHTML = `Nổ 3C Lô: <strong class="text-white">${win3CangLoDays} kỳ (${total3CangLoHits} nháy)</strong> • 3C Đề: <span class="font-bold text-pink-300">${win3CangDeCount} kỳ</span>`;
+        }
+        const el3CangLoPnL = document.getElementById("audit3CangLoPnL");
+        if (el3CangLoPnL) {
+          el3CangLoPnL.textContent = `${total3CangLoPnL >= 0 ? '+' : ''}${total3CangLoPnL.toLocaleString('vi-VN')}đ`;
+          el3CangLoPnL.className = `font-mono-num font-bold ${total3CangLoPnL >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+        }
+
+        const elTwoHitRate = document.getElementById("auditTwoHitRate");
+        if (elTwoHitRate) elTwoHitRate.textContent = `${twoHitRate}%`;
+        const elTwoHitSub = document.getElementById("auditTwoHitSub");
+        if (elTwoHitSub) {
+          elTwoHitSub.innerHTML = `Chuẩn xác: <strong class="text-white">${twoHitWins}/${total} ứng viên</strong> nổ ≥ 2 nháy`;
+        }
+      } else {
+        const elDanDeRate = document.getElementById("auditDanDeWinrate");
+        if (elDanDeRate) elDanDeRate.textContent = `0%`;
+        const elDanDeHits = document.getElementById("auditDanDeHits");
+        if (elDanDeHits) elDanDeHits.innerHTML = `Không có bản ghi phù hợp`;
+        const elBtlRate = document.getElementById("auditBtlWinrate");
+        if (elBtlRate) elBtlRate.textContent = `0%`;
+        const el3CangRate = document.getElementById("audit3CangWinrate");
+        if (el3CangRate) el3CangRate.textContent = `0%`;
+      }
+
+      // 3. Render danh sách bảng đối soát chi tiết
+      const tbody = document.getElementById("auditTableBody");
+      if (!tbody) return;
+
+      if (filteredRecords.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="10" class="py-8 text-center text-slate-400 text-xs">
+              Không tìm thấy kỳ mở thưởng nào thỏa mãn tiêu chí lọc hiện tại trong Khung TK.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = filteredRecords.map((r, rowIdx) => {
+        // Tag hiển thị kết quả dàn 27
+        const danDeBadge = r.isDanDe27Win
+          ? `<span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold text-xs">✓ Trúng Đề (${r.actualDe})</span>`
+          : `<span class="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 text-xs">✗ Trượt Đề</span>`;
+
+        // Tag hiển thị kết quả BTL
+        const btlBadge = r.isBtlWin
+          ? `<span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold text-xs">✓ Lô Nổ ${r.btlHitCount} Nháy</span>`
+          : `<span class="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 text-xs">✗ Lô Không Về</span>`;
+
+        // Tag hiển thị kết quả 3 Càng: phân biệt rõ 3C Đề và 3C Lô Dàn 6 số
+        let threeCangBadges = [];
+        if (r.is3CangDeWin) {
+          threeCangBadges.push(`<span class="px-2 py-0.5 rounded-full bg-pink-500/25 text-pink-300 border border-pink-500/50 font-extrabold text-xs">★ ĂN 3C ĐỀ (${r.actual3CangDe})</span>`);
+        }
+        if (r.is3CangLoWin) {
+          const hitStr = r.comboHitsList.join(", ");
+          threeCangBadges.push(`<span class="px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/40 font-bold text-xs">✓ NỔ 3C LÔ (${r.total3CangLoHits} nháy: ${hitStr})</span>`);
+        }
+        if (threeCangBadges.length === 0) {
+          threeCangBadges.push(`<span class="text-slate-500 text-[11px]">3C: Trượt</span>`);
+        }
+
+        // Render preview 27 số đã đánh (tô màu con trúng ĐB)
+        const danDePills = r.predDanDe27.map(n => {
+          const isHit = n === r.actualDe;
+          const isBtd = n === r.predBTD;
+          if (isHit) {
+            return `<span class="inline-block px-1.5 py-0.2 rounded bg-amber-400 text-slate-950 font-extrabold shadow-sm scale-105 border border-amber-300">${n}★</span>`;
+          }
+          if (isBtd) {
+            return `<span class="inline-block px-1 py-0.2 rounded bg-amber-500/30 text-amber-300 font-bold">${n}</span>`;
+          }
+          return `<span class="inline-block px-1 py-0.2 text-slate-300">${n}</span>`;
+        }).join(" ");
+
+        return `
+          <tr class="hover:bg-slate-900/60 transition ${r.isDanDe27Win ? 'bg-amber-950/15' : ''}">
+            <td class="py-3 px-3 text-center">
+              <div class="font-bold text-white">${formatDateVN(r.date)}</div>
+              <div class="text-[11px] text-slate-400">${r.dayName} (${r.province})</div>
+            </td>
+            <td class="py-3 px-3 text-center">
+              <span class="inline-block px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-sm font-extrabold text-rose-400">
+                ${r.actualSpecial.slice(0, -3)}<span class="text-pink-300">${r.actual3CangDe.slice(0, 1)}</span><span class="text-amber-300 underline">${r.actualDe}</span>
+              </span>
+              <div class="text-[11px] text-slate-400 mt-0.5">3 Càng: <strong class="text-pink-300">${r.actual3CangDe}</strong></div>
+            </td>
+            <td class="py-3 px-3 text-center">
+              <div class="space-y-1">
+                <div>BTL: <strong class="text-base text-white font-mono-num">${r.predBTL}</strong> <span class="text-slate-400 text-[11px]">(Lót: ${r.predBTL_backup.join(",")})</span></div>
+                <div>BTD: <strong class="text-amber-300 font-mono-num">${r.predBTD}</strong> <span class="text-slate-400 text-[11px]">• 2N: ${r.predTwoHit}</span></div>
+              </div>
+            </td>
+            <td class="py-3 px-3 text-center">
+              <div class="text-pink-300 font-bold font-mono-num">${r.pred3CangDe}</div>
+              <div class="text-[10px] text-slate-300">
+                3C Lô: <strong class="${r.is3CangLoWin ? 'text-emerald-400 font-bold' : 'text-slate-400'}">${r.pred3CangLo}</strong>
+              </div>
+              <div class="text-[9px] text-purple-300/80 truncate max-w-[120px] mx-auto">${r.pred3CangCombos.slice(0, 3).join(",")}..</div>
+            </td>
+            <td class="py-3 px-3 text-center max-w-xs">
+              <div class="p-2 rounded-xl bg-slate-950/80 border border-slate-800 text-[11px] font-mono-num leading-relaxed text-left">
+                ${danDePills}
+              </div>
+            </td>
+            <td class="py-3 px-3 text-center">
+              <div class="flex flex-col items-center gap-1">
+                ${danDeBadge}
+                ${btlBadge}
+                ${threeCangBadges.join("")}
+              </div>
+            </td>
+            <td class="py-3 px-3 text-right font-bold ${r.pnlDanDe27 >= 0 ? 'text-emerald-400' : 'text-rose-400'}">
+              ${r.pnlDanDe27 >= 0 ? '+' : ''}${r.pnlDanDe27.toLocaleString('vi-VN')}đ
+            </td>
+            <td class="py-3 px-3 text-right font-bold ${r.pnlBtl >= 0 ? 'text-emerald-400' : 'text-rose-400'}">
+              ${r.pnlBtl >= 0 ? '+' : ''}${r.pnlBtl.toLocaleString('vi-VN')}đ
+            </td>
+            <td class="py-3 px-3 text-right font-bold ${r.pnl3CangLo >= 0 ? 'text-emerald-400' : 'text-rose-400'}">
+              ${r.pnl3CangLo >= 0 ? '+' : ''}${r.pnl3CangLo.toLocaleString('vi-VN')}đ
+            </td>
+            <td class="py-3 px-3 text-center">
+              <button class="btn-inspect-audit-row px-2.5 py-1.5 rounded-lg bg-indigo-600/30 hover:bg-indigo-600/50 border border-indigo-500/40 text-indigo-200 text-xs font-semibold transition cursor-pointer" data-date="${r.date}">
+                Soi Đầy Đủ
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+
+      // Gắn sự kiện click mở modal chi tiết cho từng hàng
+      tbody.querySelectorAll(".btn-inspect-audit-row").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const date = btn.getAttribute("data-date");
+          const record = auditRecords.find(r => r.date === date);
+          if (record) openAuditDetailModal(record);
+        });
+      });
+    }
+
+    // Modal hiển thị chi tiết bộ số đã đánh trong quá khứ
+    function openAuditDetailModal(record) {
+      const modal = document.getElementById("auditDetailModal");
+      if (!modal) return;
+
+      document.getElementById("auditModalTitle").textContent = `Bộ Số Đã Đánh Ngày ${formatDateVN(record.date)} (${record.dayName})`;
+      document.getElementById("auditModalActualText").innerHTML = `Đặc Biệt: <span class="text-rose-400 font-mono-num font-bold">${record.actualSpecial}</span> (3 Càng: <span class="text-pink-300 font-bold font-mono-num">${record.actual3CangDe}</span>, Đề: <span class="text-amber-300 font-bold font-mono-num">${record.actualDe}</span>) • G1: <span class="text-slate-200 font-mono-num">${record.actualPrize1}</span>`;
+      
+      const badgeContainer = document.getElementById("auditModalResultBadge");
+      badgeContainer.innerHTML = record.isDanDe27Win
+        ? `<span class="px-3 py-1 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold">✓ ĂN ĐỀ 27 SỐ (+720k)</span>`
+        : `<span class="px-3 py-1 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-500/40 font-bold">✗ TRƯỢT ĐỀ (-270k)</span>`;
+
+      document.getElementById("auditModalBtlNumber").textContent = record.predBTL;
+      document.getElementById("auditModalBtlSub").innerHTML = `Lót: <strong class="text-amber-300 font-mono-num">${record.predBTL_backup.join(", ")}</strong> • Thực tế nổ: <strong class="${record.btlHitCount > 0 ? 'text-emerald-400' : 'text-slate-400'} font-mono-num">${record.btlHitCount} nháy</strong>`;
+
+      document.getElementById("auditModalBtdNumber").textContent = record.predBTD;
+      document.getElementById("auditModalBtdSub").innerHTML = `Dàn 8s: <span class="font-mono-num text-amber-300 font-semibold">${record.predDe8.join(", ")}</span>`;
+
+      // Cập nhật thẻ 3 Càng VIP trong modal (tách bạch rõ 3C Đề và 3C Lô Dàn 6 số)
+      const elModal3CangDe = document.getElementById("auditModal3CangDe");
+      if (elModal3CangDe) elModal3CangDe.textContent = record.pred3CangDe;
+      const elModal3CangLo = document.getElementById("auditModal3CangLo");
+      if (elModal3CangLo) elModal3CangLo.textContent = record.pred3CangLo;
+      const elModal3CangCombos = document.getElementById("auditModal3CangCombos");
+      if (elModal3CangCombos) elModal3CangCombos.textContent = record.pred3CangCombos.join(", ");
+      const elModal3CangBadge = document.getElementById("auditModal3CangBadge");
+      if (elModal3CangBadge) {
+        const badges = [];
+        if (record.is3CangDeWin) {
+          badges.push(`<span class="text-pink-300 font-bold block">✓ NỔ 3 CÀNG ĐẶC BIỆT (${record.actual3CangDe})</span>`);
+        }
+        if (record.is3CangLoWin) {
+          badges.push(`<span class="text-emerald-400 font-bold block">✓ NỔ DÀN 6S 3C LÔ (${record.total3CangLoHits} nháy: ${record.comboHitsList.join(", ")}) [PnL: ${record.pnl3CangLo >= 0 ? '+' : ''}${record.pnl3CangLo.toLocaleString('vi-VN')}đ]</span>`);
+        }
+        if (badges.length === 0) {
+          badges.push(`<span class="text-slate-500">Chưa về 3 càng (PnL: -138.000đ)</span>`);
+        }
+        elModal3CangBadge.innerHTML = badges.join("");
+      }
+
+      // Render grid 27 số
+      const grid = document.getElementById("auditModalDanDeGrid");
+      grid.innerHTML = record.predDanDe27.map(n => {
+        const isHit = n === record.actualDe;
+        const isBtd = n === record.predBTD;
+        return `
+          <div class="py-2 px-1 rounded-xl text-xs font-bold font-mono-num ${
+            isHit
+              ? 'bg-amber-400 text-slate-950 shadow-md ring-2 ring-amber-300 scale-105'
+              : isBtd
+                ? 'bg-amber-500/30 text-amber-300 border border-amber-500/50'
+                : 'bg-slate-900 border border-slate-800 text-slate-300'
+          }">
+            <div>${n}</div>
+            <div class="text-[9px] ${isHit ? 'text-slate-950 font-extrabold' : 'text-slate-500'}">${isHit ? 'TRÚNG' : isBtd ? 'BTD' : ''}</div>
+          </div>
+        `;
+      }).join("");
+
+      document.getElementById("auditModalDanDeMatchBadge").textContent = record.isDanDe27Win ? `✓ Khớp số ĐB ${record.actualDe}` : `Chưa về trong dàn`;
+
+      // Nút sao chép dàn 27 số của ngày đó
+      const copyBtn = document.getElementById("btnCopyAuditDanDe");
+      copyBtn.onclick = () => {
+        copyTextToClipboard(record.predDanDe27.join(", "), `Đã sao chép 27 số đề ngày ${formatDateVN(record.date)}!`);
+      };
+
+      modal.classList.remove("hidden");
+    }
+
+    // =========================================================================
     // 5. RENDER GIAO DIỆN & CẬP NHẬT BỘ SỐ
     // =========================================================================
     function formatDateVN(dateStr) {
@@ -1753,6 +2394,7 @@
 
     function populateDateSelector() {
       const sel = document.getElementById("drawDateSelect");
+      if (!sel) return;
       sel.innerHTML = "";
       xsmbHistory.forEach((d, idx) => {
         const opt = document.createElement("option");
@@ -1767,10 +2409,14 @@
       const draw = xsmbHistory[selectedDrawIndex] || xsmbHistory[0];
       if (!draw) return;
 
-      document.getElementById("boardTitleText").textContent =
-        `Kết Quả Xổ Số Miền Bắc — ${formatDateVN(draw.date)} (${draw.province})`;
-      document.getElementById("drawMetaCodeText").innerHTML =
-        `Mã ĐB: <span class="text-amber-300 font-semibold">${draw.code || "XSKT-MB"}</span>`;
+      const titleEl = document.getElementById("boardTitleText");
+      if (titleEl) {
+        titleEl.textContent = `Kết Quả Xổ Số Miền Bắc — ${formatDateVN(draw.date)} (${draw.province})`;
+      }
+      const codeEl = document.getElementById("drawMetaCodeText");
+      if (codeEl) {
+        codeEl.innerHTML = `Mã ĐB: <span class="text-amber-300 font-semibold">${draw.code || "XSKT-MB"}</span>`;
+      }
 
       const rows = [
         { label: "Giải ĐB", items: [draw.special], isSpecial: true },
@@ -1784,30 +2430,32 @@
       ];
 
       const tbody = document.getElementById("xsmbPrizeTableBody");
-      tbody.innerHTML = rows.map(r => {
-        const itemsHtml = r.items.map(val => {
-          const disp = formatPrizeDigits(val, currentDigitMode);
-          if (r.isSpecial) {
-            const prefix = currentDigitMode === "full" ? disp.slice(0, -2) : "";
-            const last2 = disp.slice(-2);
-            return `<span class="inline-flex items-baseline justify-center px-4 py-1.5 rounded-xl bg-rose-500/15 border border-rose-500/40 text-2xl sm:text-3xl font-extrabold font-mono-num tracking-wider text-rose-400">
-              <span>${prefix}</span><span class="text-amber-300 underline decoration-amber-400/60">${last2}</span>
-            </span>`;
-          }
-          if (r.isFirst) {
-            return `<span class="font-mono-num font-bold text-lg text-white tracking-wider">${disp}</span>`;
-          }
-          if (r.isSeventh) {
-            return `<span class="inline-block px-3 py-1 rounded-lg bg-slate-900 border border-slate-800 font-mono-num font-extrabold text-base text-amber-300">${disp}</span>`;
-          }
-          return `<span class="inline-block px-2.5 py-1 font-mono-num font-semibold text-slate-200 text-sm sm:text-base">${disp}</span>`;
-        }).join("");
+      if (tbody) {
+        tbody.innerHTML = rows.map(r => {
+          const itemsHtml = r.items.map(val => {
+            const disp = formatPrizeDigits(val, currentDigitMode);
+            if (r.isSpecial) {
+              const prefix = currentDigitMode === "full" ? disp.slice(0, -2) : "";
+              const last2 = disp.slice(-2);
+              return `<span class="inline-flex items-baseline justify-center px-4 py-1.5 rounded-xl bg-rose-500/15 border border-rose-500/40 text-2xl sm:text-3xl font-extrabold font-mono-num tracking-wider text-rose-400">
+                <span>${prefix}</span><span class="text-amber-300 underline decoration-amber-400/60">${last2}</span>
+              </span>`;
+            }
+            if (r.isFirst) {
+              return `<span class="font-mono-num font-bold text-lg text-white tracking-wider">${disp}</span>`;
+            }
+            if (r.isSeventh) {
+              return `<span class="inline-block px-3 py-1 rounded-lg bg-slate-900 border border-slate-800 font-mono-num font-extrabold text-base text-amber-300">${disp}</span>`;
+            }
+            return `<span class="inline-block px-2.5 py-1 font-mono-num font-semibold text-slate-200 text-sm sm:text-base">${disp}</span>`;
+          }).join("");
 
-        return `<tr class="${r.isSpecial ? 'bg-rose-950/20' : 'hover:bg-slate-900/50'}">
-          <td class="py-2.5 px-3 w-24 text-left font-bold text-xs sm:text-sm ${r.isSpecial ? 'text-rose-400' : 'text-slate-400'} border-r border-slate-800/80">${r.label}</td>
-          <td class="py-2.5 px-3"><div class="flex flex-wrap items-center justify-around gap-2">${itemsHtml}</div></td>
-        </tr>`;
-      }).join("");
+          return `<tr class="${r.isSpecial ? 'bg-rose-950/20' : 'hover:bg-slate-900/50'}">
+            <td class="py-2.5 px-3 w-24 text-left font-bold text-xs sm:text-sm ${r.isSpecial ? 'text-rose-400' : 'text-slate-400'} border-r border-slate-800/80">${r.label}</td>
+            <td class="py-2.5 px-3"><div class="flex flex-wrap items-center justify-around gap-2">${itemsHtml}</div></td>
+          </tr>`;
+        }).join("");
+      }
 
       // Lô Đầu - Đuôi
       const lotos = getLotosOfDraw(draw);
@@ -1822,32 +2470,40 @@
       });
 
       const headTailBody = document.getElementById("lotoHeadTailBody");
-      headTailBody.innerHTML = heads.map((arr, hIdx) => {
-        arr.sort();
-        const badges = arr.length > 0
-          ? arr.map(num => {
-              const isSp = num === spLast2;
-              const count = freqMap[num] || 1;
-              return `<span class="inline-block px-1.5 py-0.5 rounded ${isSp ? 'bg-rose-500/25 text-rose-300 border border-rose-500/40 font-extrabold' : count >= 2 ? 'bg-emerald-500/20 text-emerald-300 font-bold' : 'text-slate-200'}">${num}</span>`;
-            }).join(" , ")
-          : `<span class="text-slate-600 italic">Đầu câm</span>`;
+      if (headTailBody) {
+        headTailBody.innerHTML = heads.map((arr, hIdx) => {
+          arr.sort();
+          const badges = arr.length > 0
+            ? arr.map(num => {
+                const isSp = num === spLast2;
+                const count = freqMap[num] || 1;
+                return `<span class="inline-block px-1.5 py-0.5 rounded ${isSp ? 'bg-rose-500/25 text-rose-300 border border-rose-500/40 font-extrabold' : count >= 2 ? 'bg-emerald-500/20 text-emerald-300 font-bold' : 'text-slate-200'}">${num}</span>`;
+              }).join(" , ")
+            : `<span class="text-slate-600 italic">Đầu câm</span>`;
 
-        return `<tr class="hover:bg-slate-900/50">
-          <td class="py-2 px-3 text-center font-bold text-amber-400 bg-slate-900/40 border-r border-slate-800/80">${hIdx}</td>
-          <td class="py-2 px-3">${badges}</td>
-          <td class="py-2 px-3 text-right text-xs text-slate-400">${arr.length} nháy</td>
-        </tr>`;
-      }).join("");
+          return `<tr class="hover:bg-slate-900/50">
+            <td class="py-2 px-3 text-center font-bold text-amber-400 bg-slate-900/40 border-r border-slate-800/80">${hIdx}</td>
+            <td class="py-2 px-3">${badges}</td>
+            <td class="py-2 px-3 text-right text-xs text-slate-400">${arr.length} nháy</td>
+          </tr>`;
+        }).join("");
+      }
 
       const multiHits = Object.entries(freqMap).filter(([, c]) => c >= 2);
-      document.getElementById("dayMultiHitBadges").innerHTML = multiHits.length > 0
-        ? multiHits.map(([num, c]) => `<span class="px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-500/30 text-emerald-300">${num} (${c} nháy)</span>`).join("")
-        : `<span class="text-slate-500 font-normal">Không có lô ≥ 2 nháy</span>`;
+      const multiEl = document.getElementById("dayMultiHitBadges");
+      if (multiEl) {
+        multiEl.innerHTML = multiHits.length > 0
+          ? multiHits.map(([num, c]) => `<span class="px-2 py-0.5 rounded bg-emerald-500/20 border border-emerald-500/30 text-emerald-300">${num} (${c} nháy)</span>`).join("")
+          : `<span class="text-slate-500 font-normal">Không có lô ≥ 2 nháy</span>`;
+      }
 
       const keps = Array.from(new Set(lotos.filter(l => l[0] === l[1])));
-      document.getElementById("dayKepBadges").innerHTML = keps.length > 0
-        ? keps.map(num => `<span class="px-2 py-0.5 rounded bg-purple-500/20 border border-purple-500/30 text-purple-300">${num}</span>`).join("")
-        : `<span class="text-slate-500 font-normal">Không có lô kép</span>`;
+      const kepEl = document.getElementById("dayKepBadges");
+      if (kepEl) {
+        kepEl.innerHTML = keps.length > 0
+          ? keps.map(num => `<span class="px-2 py-0.5 rounded bg-purple-500/20 border border-purple-500/30 text-purple-300">${num}</span>`).join("")
+          : `<span class="text-slate-500 font-normal">Không có lô kép</span>`;
+      }
 
       const silentHeads = heads.map((arr, idx) => arr.length === 0 ? idx : null).filter(x => x !== null);
       const tailArr = Array.from({ length: 10 }, (_, tIdx) => lotos.filter(l => Number(l[1]) === tIdx).length);
@@ -1856,7 +2512,10 @@
       const silentParts = [];
       silentParts.push(silentHeads.length > 0 ? `Đầu ${silentHeads.join(", ")}` : "Đầu: Đủ");
       silentParts.push(silentTails.length > 0 ? `Đuôi ${silentTails.join(", ")}` : "Đuôi: Đủ");
-      document.getElementById("daySilentBadges").textContent = silentParts.join(" • ");
+      const silentEl = document.getElementById("daySilentBadges");
+      if (silentEl) {
+        silentEl.textContent = silentParts.join(" • ");
+      }
     }
 
     function renderPredictionCards(animatePulse = false) {
@@ -2698,6 +3357,7 @@
       drawBridgeNetworkCanvas();
       renderMatrixTable();
       renderCharts();
+      runBacktestAuditEngine(); // Tự động đối soát kiểm định kết quả
     }
 
     function copyTextToClipboard(text, successMsg) {
@@ -2768,14 +3428,30 @@
 
           const showOverview = targetTab === "overview";
           const showGraph = targetTab === "overview" || targetTab === "graph";
+          const showAudit = targetTab === "audit";
           document.getElementById("tabContentOverview").classList.toggle("hidden", !showOverview);
+          document.getElementById("tabContentAudit").classList.toggle("hidden", !showAudit);
           document.getElementById("graphBridgeSection").classList.toggle("hidden", !showGraph);
           document.getElementById("tabContentAnalytics").classList.toggle("hidden", targetTab !== "analytics");
           document.getElementById("tabContentMatrix").classList.toggle("hidden", targetTab !== "matrix");
 
+          if (targetTab === "audit") renderAuditSummaryAndTable();
           if (targetTab === "analytics") renderCharts();
           if (showGraph) drawBridgeNetworkCanvas();
         });
+      });
+
+      // Lắng nghe sự kiện tab Đối soát
+      document.getElementById("auditFilterMode")?.addEventListener("change", renderAuditSummaryAndTable);
+      document.getElementById("auditSearchQuery")?.addEventListener("input", renderAuditSummaryAndTable);
+      document.getElementById("btnRerunAudit")?.addEventListener("click", () => {
+        runBacktestAuditEngine();
+        showToast("Đã tính toán lại toàn bộ dữ liệu đối soát Thắng/Thua!");
+      });
+
+      // Đóng modal đối soát chi tiết
+      document.getElementById("btnCloseAuditModal")?.addEventListener("click", () => {
+        document.getElementById("auditDetailModal")?.classList.add("hidden");
       });
 
       // Nút Phân Tích & Lấy Số Dự Đoán Mới
@@ -2830,23 +3506,25 @@
       });
 
       // Điều hướng ngày quay
-      document.getElementById("drawDateSelect").addEventListener("change", (e) => {
+      document.getElementById("drawDateSelect")?.addEventListener("change", (e) => {
         selectedDrawIndex = Number(e.target.value) || 0;
         renderSelectedDrawBoard();
       });
 
-      document.getElementById("btnPrevDraw").addEventListener("click", () => {
+      document.getElementById("btnPrevDraw")?.addEventListener("click", () => {
         if (selectedDrawIndex < xsmbHistory.length - 1) {
           selectedDrawIndex++;
-          document.getElementById("drawDateSelect").value = selectedDrawIndex;
+          const sel = document.getElementById("drawDateSelect");
+          if (sel) sel.value = selectedDrawIndex;
           renderSelectedDrawBoard();
         }
       });
 
-      document.getElementById("btnNextDraw").addEventListener("click", () => {
+      document.getElementById("btnNextDraw")?.addEventListener("click", () => {
         if (selectedDrawIndex > 0) {
           selectedDrawIndex--;
-          document.getElementById("drawDateSelect").value = selectedDrawIndex;
+          const sel = document.getElementById("drawDateSelect");
+          if (sel) sel.value = selectedDrawIndex;
           renderSelectedDrawBoard();
         }
       });
