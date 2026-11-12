@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>XSMB QuantPro v6.0 — Động Cơ Xác Suất Thích Ứng & Kiểm Định XSKT.COM.VN</title>
+  <title>XSMB QuantPro v6.2 — Dự Đoán Ngày Hiện Tại & Thống Kê Live XSKT.COM.VN</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -43,6 +43,7 @@
     .glass-card {
       background: rgba(17, 24, 39, 0.85);
       backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
     .gold-glow {
@@ -70,51 +71,51 @@
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col selection:bg-rose-500 selection:text-white">
+<body class="min-h-screen flex flex-col selection:bg-rose-500 selection:text-white overflow-x-hidden">
 
   <!-- Top Live Status & Navigation Header -->
   <header class="sticky top-0 z-40 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/80">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-600 via-red-600 to-amber-500 flex items-center justify-center shadow-lg shadow-rose-600/30 font-mono-num font-extrabold text-lg text-white">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-600 via-red-600 to-amber-500 flex items-center justify-center shadow-lg shadow-rose-600/30 font-mono-num font-extrabold text-lg text-white shrink-0">
           MB
         </div>
         <div>
-          <div class="flex items-center gap-2">
-            <h1 class="text-base sm:text-lg font-extrabold tracking-tight text-white">XSMB QuantPro <span class="text-xs px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono-num">v6.0 Adaptive</span></h1>
-            <span class="px-2 py-0.5 text-[11px] font-semibold rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
+          <div class="flex flex-wrap items-center gap-2">
+            <h1 class="text-base sm:text-lg font-extrabold tracking-tight text-white">XSMB QuantPro <span class="text-xs px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono-num">v6.2 Live Auto-Daily</span></h1>
+            <span class="px-2 py-0.5 text-[11px] font-semibold rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
               <span id="syncDot" class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-              <span id="syncBadgeText">Live: xskt.com.vn</span>
+              <span id="syncBadgeText">Auto-Sync Hàng Ngày</span>
             </span>
           </div>
           <p id="lastUpdatedSubtitle" class="text-xs text-slate-400">
-            Thuật toán mới: Quét 100% Ma Trận Vị Trí (107×107) + Quán Tính EMA + Lọc Nhiễu Nhịp Rơi
+            Thống kê đến: 11/11/2026 (Ngày hiện tại - 1) • Dự đoán: 12/11/2026 (Ngày hiện tại) • Quét Live 18:15–18:40 (30s/lần)
           </p>
         </div>
       </div>
 
       <!-- Navigation Tabs -->
       <nav class="flex flex-wrap items-center gap-1 bg-slate-900/90 p-1 rounded-xl border border-slate-800 text-xs sm:text-sm">
-        <button id="tabBtnOverview" data-tab="overview" class="nav-tab-btn px-3 py-1.5 rounded-lg font-semibold bg-rose-600 text-white transition">
+        <button id="tabBtnOverview" data-tab="overview" class="nav-tab-btn px-3 py-1.5 rounded-lg font-semibold bg-rose-600 text-white transition cursor-pointer">
           Bảng Kết Quả & Dự Đoán
         </button>
-        <button id="tabBtnAudit" data-tab="audit" class="nav-tab-btn px-3 py-1.5 rounded-lg font-medium text-emerald-400 hover:text-white transition flex items-center gap-1">
+        <button id="tabBtnAudit" data-tab="audit" class="nav-tab-btn px-3 py-1.5 rounded-lg font-medium text-emerald-400 hover:text-white transition flex items-center gap-1 cursor-pointer">
           <span>📊 Đối Soát Thắng / Thua</span>
         </button>
-        <button id="tabBtnGraph" data-tab="graph" class="nav-tab-btn px-3 py-1.5 rounded-lg font-medium text-amber-300 hover:text-white transition flex items-center gap-1">
+        <button id="tabBtnGraph" data-tab="graph" class="nav-tab-btn px-3 py-1.5 rounded-lg font-medium text-amber-300 hover:text-white transition flex items-center gap-1 cursor-pointer">
           <span>🕸️ Đồ Thị Cầu Kết Nối</span>
         </button>
-        <button id="tabBtnAnalytics" data-tab="analytics" class="nav-tab-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white transition">
+        <button id="tabBtnAnalytics" data-tab="analytics" class="nav-tab-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white transition cursor-pointer">
           Biểu Đồ Xác Suất
         </button>
-        <button id="tabBtnMatrix" data-tab="matrix" class="nav-tab-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white transition">
+        <button id="tabBtnMatrix" data-tab="matrix" class="nav-tab-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white transition cursor-pointer">
           Ma Trận 00–99
         </button>
       </nav>
 
       <!-- Action Controls -->
-      <div class="flex items-center gap-2">
-        <div class="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-slate-300">
+      <div class="flex flex-wrap items-center gap-2">
+        <div class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-slate-300">
           <span class="text-slate-400">Khung TK:</span>
           <select id="windowRangeSelect" class="bg-transparent font-semibold text-amber-400 focus:outline-none cursor-pointer">
             <option value="10" class="bg-slate-900 text-white">10 kỳ gần nhất</option>
@@ -141,28 +142,28 @@
   <!-- Main Content Container -->
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
 
-    <!-- Top KPI Summary Strip -->
-    <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+    <!-- Top KPI Summary Strip (4 Cards) -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
       <div class="glass-card rounded-2xl p-4 border-l-4 border-l-rose-500">
         <div class="flex items-center justify-between text-xs text-slate-400">
-          <span>Kỳ Quay Mới Nhất (XSKT)</span>
-          <span id="kpiProvinceBadge" class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-medium">Thái Bình</span>
+          <span>Kỳ Thống Kê (Ngày Hiện Tại - 1)</span>
+          <span id="kpiProvinceBadge" class="px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-medium">Bắc Ninh</span>
         </div>
-        <div id="kpiLatestDate" class="text-lg sm:text-xl font-bold text-white mt-1 font-mono-num">01/11/2026</div>
+        <div id="kpiLatestDate" class="text-lg sm:text-xl font-bold text-white mt-1 font-mono-num">11/11/2026</div>
         <div class="text-xs text-slate-400 mt-1 flex items-center justify-between">
-          <span>Giải ĐB:</span>
-          <span id="kpiLatestSpecial" class="font-mono-num font-bold text-rose-400 text-sm">03917</span>
+          <span>Giải ĐB (Thứ Tư):</span>
+          <span id="kpiLatestSpecial" class="font-mono-num font-bold text-rose-400 text-sm">74129</span>
         </div>
       </div>
 
       <div class="glass-card rounded-2xl p-4 border-l-4 border-l-amber-500">
         <div class="flex items-center justify-between text-xs text-slate-400">
-          <span>Đếm Ngược Quay Thưởng</span>
+          <span id="kpiScheduleModeLabel">Đếm Ngược Quay & Chốt Số</span>
           <span class="text-amber-400 font-semibold">18:15 Hàng Ngày</span>
         </div>
         <div id="kpiCountdown" class="text-lg sm:text-xl font-bold text-amber-400 mt-1 font-mono-num">--:--:--</div>
         <div id="kpiNextDrawInfo" class="text-xs text-slate-400 mt-1 truncate">
-          Kỳ tiếp: Hôm nay (Hà Nội)
+          Tự động lấy số mới lúc 18:35
         </div>
       </div>
 
@@ -179,12 +180,12 @@
 
       <div class="glass-card rounded-2xl p-4 border-l-4 border-l-sky-500">
         <div class="flex items-center justify-between text-xs text-slate-400">
-          <span>Cầu Vị Trí Thông Mạnh Nhất</span>
-          <span class="text-sky-400 font-semibold">Ma trận 107×107</span>
+          <span>Cầu Nhiều Nháy XSKT Live</span>
+          <span class="text-sky-400 font-semibold">Cầu 3N & 2N</span>
         </div>
-        <div id="kpiMultiHitLeader" class="text-lg sm:text-xl font-bold text-sky-400 mt-1 font-mono-num">--</div>
+        <div id="kpiMultiHitLeader" class="text-lg sm:text-xl font-bold text-sky-400 mt-1 font-mono-num">00 , 69 (3 ngày)</div>
         <div id="kpiMultiHitSub" class="text-xs text-slate-400 mt-1">
-          Quét toàn diện mọi vị trí giải
+          Cầu 2 ngày: 05, 14, 24, 28 • Pascal: 69-96
         </div>
       </div>
     </section>
@@ -193,20 +194,25 @@
     <section id="predictionEngineSection" class="glass-card rounded-3xl p-5 sm:p-6 border border-amber-500/30 relative overflow-hidden">
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-slate-800">
         <div>
-          <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-semibold mb-2">
-            <span>⚡ Engine v6.0: Full-Matrix Positional Bridges + EMA Momentum + Anti-Gan Filter</span>
+          <div class="flex flex-wrap items-center gap-2 mb-2">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-xs font-semibold">
+              <span>⚡ Engine v6.2: Dự Đoán Ngày Hiện Tại • Thống Kê Cập Nhật Đến Ngày Hiện Tại - 1</span>
+            </span>
+            <span id="dailySchedulerBadge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-mono-num font-semibold">
+              <span>🕒 Cập nhật gần nhất: --:--:--</span>
+            </span>
           </div>
           <h2 class="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
-            Tổ Hợp Bộ Số Dự Đoán XSMB Ngày <span id="predTargetDateLabel" class="text-amber-400">02/11/2026</span>
+            Tổ Hợp Bộ Số Dự Đoán XSMB Ngày Hiện Tại: <span id="predTargetDateLabel" class="text-amber-400">12/11/2026 (Thứ Năm - Hà Nội)</span>
           </h2>
           <p class="text-xs sm:text-sm text-slate-300 mt-1">
-            Loại bỏ bẫy lô gan sâu, ưu tiên cầu vị trí thông thật (≥3 kỳ) và quán tính chạm ĐB ngắn hạn (mẫu <span id="predSampleSizeLabel" class="font-bold text-white">15</span> kỳ, <span id="predTotalBallsLabel" class="font-bold text-white">405</span> quả bóng).
+            Thống kê live cập nhật đầy đủ đến hết kỳ mở thưởng <span id="predStatsCutoffLabel" class="font-bold text-rose-300">Ngày Hiện Tại - 1: 11/11/2026 (Thứ Tư - Bắc Ninh, ĐB: 74129)</span> — mẫu <span id="predSampleSizeLabel" class="font-bold text-white">15</span> kỳ (<span id="predTotalBallsLabel" class="font-bold text-white">405</span> quả bóng).
           </p>
         </div>
 
         <div class="flex flex-wrap items-center gap-2.5">
           <select id="strategyModeSelect" class="px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs sm:text-sm font-medium text-slate-200 focus:outline-none focus:border-amber-400">
-            <option value="adaptive" selected>Mô hình v6.0: Cầu Vị Trí Động + Quán Tính EMA (Tối Ưu Winrate)</option>
+            <option value="adaptive" selected>Mô hình v6.2: Cầu Vị Trí Động + Quán Tính EMA + Cầu Nhiều Nháy XSKT</option>
             <option value="momentum">Mô hình: Bắt Sóng Nhịp Rơi Nhanh (1–3 Ngày)</option>
             <option value="bridge_pure">Mô hình: Thuần Cầu Vị Trí Thông Dài Nhất</option>
           </select>
@@ -302,8 +308,8 @@
         <div class="rounded-2xl bg-slate-900/90 border border-emerald-500/30 p-4 flex flex-col justify-between emerald-glow">
           <div>
             <div class="flex items-center justify-between">
-              <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">4. Cầu Lô Về ≥ 2 Nháy</span>
-              <span id="twoHitSourceBadge" class="px-2 py-0.5 text-[11px] rounded-full bg-emerald-500/20 text-emerald-300 font-mono-num font-semibold">Hội tụ cầu</span>
+              <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">4. Cầu Lô Về ≥ 2 Nháy (XSKT Live)</span>
+              <span id="twoHitSourceBadge" class="px-2 py-0.5 text-[11px] rounded-full bg-emerald-500/20 text-emerald-300 font-mono-num font-semibold">XSKT Live</span>
             </div>
             <div class="my-3 flex items-baseline gap-3">
               <div id="twoHitMainNumber" class="text-5xl font-extrabold font-mono-num text-emerald-400 tracking-wider">--</div>
@@ -354,7 +360,11 @@
         </div>
 
         <div class="mt-4">
-          <div id="danDe27Grid" class="grid grid-cols-6 sm:grid-cols-9 md:grid-cols-14 lg:grid-cols-27 gap-1.5 sm:gap-2"></div>
+          <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+            <span>Danh sách 27 con số hội tụ cao nhất (nhấp vào số bất kỳ để soi trong Ma Trận 00–99):</span>
+            <span class="text-amber-300 font-mono-num font-semibold">27 / 100 số</span>
+          </div>
+          <div id="danDe27Grid" class="grid grid-cols-5 sm:grid-cols-9 gap-2"></div>
         </div>
 
         <div class="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-3 pt-3 border-t border-slate-800/80 text-xs">
@@ -366,9 +376,10 @@
           </div>
 
           <div class="p-3 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-1">
-            <div class="text-slate-400 font-semibold">Cải Tiến Logic v6.0 (Khắc Phục Thua Lỗ):</div>
+            <div class="text-slate-400 font-semibold">Cơ Chế Tự Động Cập Nhật Hàng Ngày:</div>
             <div class="text-slate-300 text-[11px] leading-relaxed">
-              Đảo chiều trọng số từ <em>bắt chạm gan (Gambler's Fallacy)</em> sang <strong>bắt chạm đang chạy theo chuỗi (Momentum Clustering)</strong>, giúp bám sát nhịp rơi thực tế của lồng cầu.
+              • <strong>18:15 – 18:40:</strong> Tự động quét Live mỗi 30 giây.<br>
+              • <strong>18:35 & 00:01:</strong> Chốt sổ kỳ mở thưởng trong ngày và tự động sinh bộ số mới cho ngày tiếp theo.
             </div>
           </div>
 
@@ -397,9 +408,9 @@
             </div>
 
             <div class="flex items-center gap-1.5">
-              <button id="btnPrevDraw" class="p-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 transition cursor-pointer">&#8592;</button>
+              <button id="btnPrevDraw" class="p-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 transition cursor-pointer" title="Kỳ trước">&#8592;</button>
               <select id="drawDateSelect" class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs sm:text-sm font-mono-num font-semibold text-white focus:outline-none focus:border-rose-500"></select>
-              <button id="btnNextDraw" class="p-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 transition cursor-pointer">&#8594;</button>
+              <button id="btnNextDraw" class="p-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 transition cursor-pointer" title="Kỳ kế tiếp">&#8594;</button>
             </div>
           </div>
 
@@ -467,7 +478,7 @@
             </h3>
             <div class="mt-3 space-y-3 text-xs">
               <div>
-                <div class="text-slate-400 font-medium mb-1.5">Top Lô Gan Đã Bị Loại Khỏi Đề Xuất (Tránh Bẫy Vốn):</div>
+                <div class="text-slate-400 font-medium mb-1.5">Top 6 Lô Gan Đã Bị Loại Khỏi Đề Xuất (Tránh Bẫy Vốn):</div>
                 <div id="topLoGanList" class="grid grid-cols-3 gap-2"></div>
               </div>
               <div class="pt-2 border-t border-slate-800/80">
@@ -488,7 +499,7 @@
           <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 text-xs font-semibold mb-1.5">
             <span>🕸️ Sơ Đồ Cầu Vị Trí Toàn Diện (107×107) & Tháp Pascal</span>
           </div>
-          <h2 class="text-lg sm:text-xl font-extrabold text-white flex items-center gap-2">
+          <h2 class="text-lg sm:text-xl font-extrabold text-white flex flex-wrap items-center gap-2">
             <span>Đồ Thị Đường Cầu Vị Trí & Ma Trận Bạc Nhớ Chuyển Trạng Thái</span>
             <span id="graphBacktestBadge" class="px-2.5 py-0.5 text-xs rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-mono-num">Quét 11,449 Cặp Vị Trí</span>
           </h2>
@@ -515,6 +526,12 @@
         <div class="lg:col-span-8 flex flex-col">
           <div class="relative w-full h-[430px] sm:h-[470px] rounded-2xl bg-slate-950/90 border border-slate-800/90 overflow-hidden shadow-inner">
             <canvas id="bridgeNetworkCanvas" class="w-full h-full cursor-pointer"></canvas>
+            <div class="absolute top-3 left-3 flex flex-wrap items-center gap-3 px-3 py-1.5 rounded-xl bg-slate-900/85 backdrop-blur border border-slate-800 text-[11px] text-slate-300 pointer-events-none">
+              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-sky-400 inline-block"></span>Nguồn Dữ Liệu</span>
+              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-purple-400 inline-block"></span>Lõi Hội Tụ</span>
+              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span>BTL / 2 Nháy</span>
+              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></span>BTĐ / Dàn 27</span>
+            </div>
             <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between px-3 py-1.5 rounded-xl bg-slate-900/80 backdrop-blur border border-slate-800/80 text-[11px] text-slate-400 pointer-events-none">
               <span>💡 Nhấp vào các Nút (Node) trên sơ đồ để soi chi tiết đường truyền dữ liệu.</span>
               <span class="font-mono-num text-indigo-300 hidden sm:inline">Trọng số liên kết w(u,v)</span>
@@ -536,7 +553,7 @@
             <p id="inspectorNodeDesc" class="mt-2 text-xs text-slate-300 leading-relaxed bg-slate-950/70 p-2.5 rounded-xl border border-slate-800/80">
               Nhấp vào một nút trên sơ đồ mạng lưới bên trái để soi chi tiết.
             </p>
-            <div id="inspectorConnectedList" class="mt-2.5 space-y-1.5 max-h-36 overflow-y-auto custom-scrollbar text-xs"></div>
+            <div id="inspectorConnectedList" class="mt-2.5 space-y-1.5 max-h-32 overflow-y-auto custom-scrollbar text-xs"></div>
           </div>
 
           <div class="rounded-2xl bg-slate-900/90 border border-slate-800 p-4 flex-1 flex flex-col justify-between">
@@ -560,9 +577,9 @@
       </div>
     </section>
 
-    <!-- TAB 2: AUDIT & BACKTESTING ENGINE - THỐNG KÊ THẮNG / THUA LỊCH SỬ -->
+    <!-- TAB 2: AUDIT & BACKTESTING ENGINE -->
     <div id="tabContentAudit" class="hidden space-y-6">
-      <section class="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
         <div class="glass-card rounded-2xl p-4 border-l-4 border-l-amber-500">
           <div class="flex items-center justify-between text-xs text-slate-400">
             <span>Dàn Đề 27 Số (270k)</span>
@@ -592,7 +609,7 @@
           </div>
           <div id="auditDe8Winrate" class="text-2xl font-extrabold text-purple-400 mt-1 font-mono-num">--%</div>
           <div id="auditDe8Hits" class="text-xs text-slate-400 mt-1">
-            Ăn Đề 8s: <strong class="text-white">-- kỳ</strong> • Ăn BTĐ: <span id="auditBtdHits" class="font-bold text-amber-300">-- kỳ</span>
+            Ăn Đề 8s: <strong class="text-white">-- kỳ</strong> • BTĐ: <span id="auditBtdHits" class="font-bold text-amber-300">-- kỳ</span>
           </div>
         </div>
 
@@ -603,7 +620,7 @@
           </div>
           <div id="audit3CangWinrate" class="text-2xl font-extrabold text-pink-400 mt-1 font-mono-num">--%</div>
           <div id="audit3CangHits" class="text-xs text-slate-400 mt-1">
-            Nổ 3C Đề: <strong class="text-white">-- kỳ</strong> • 3C Lô: <span id="audit3CangLotoHits" class="font-bold text-pink-300">-- kỳ</span>
+            Nổ 3C Lô: <strong class="text-white">-- kỳ</strong> • 3C Đề: <span id="audit3CangLotoHits" class="font-bold text-pink-300">-- kỳ</span>
           </div>
           <div class="text-[11px] text-slate-400 mt-1 pt-1 border-t border-slate-800 flex items-center justify-between">
             <span>PnL Dàn 6S (138k):</span>
@@ -611,7 +628,7 @@
           </div>
         </div>
 
-        <div class="glass-card rounded-2xl p-4 border-l-4 border-l-emerald-500 col-span-2 lg:col-span-1">
+        <div class="glass-card rounded-2xl p-4 border-l-4 border-l-emerald-500 sm:col-span-2 lg:col-span-1">
           <div class="flex items-center justify-between text-xs text-slate-400">
             <span>Song Thủ Lô (BTL + Lót 1)</span>
             <span class="text-emerald-400 font-bold font-mono-num">Chuẩn: 41.9%</span>
@@ -628,9 +645,9 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800">
           <div>
             <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-semibold mb-1">
-              <span>🔍 Walk-Forward Backtesting v6.0 (<span id="auditWindowSizeBadge" class="font-bold text-amber-300">15 kỳ</span>)</span>
+              <span>🔍 Walk-Forward Backtesting v6.1 (<span id="auditWindowSizeBadge" class="font-bold text-amber-300">15 kỳ</span>)</span>
             </div>
-            <h3 class="text-lg font-bold text-white">Bảng Đối Soát Chi Tiết: Dự Đoán v6.0 vs Kết Quả Thực Tế Từng Ngày</h3>
+            <h3 class="text-lg font-bold text-white">Bảng Đối Soát Chi Tiết: Dự Đoán vs Kết Quả Thực Tế Từng Ngày</h3>
           </div>
 
           <div class="flex flex-wrap items-center gap-2">
@@ -672,23 +689,27 @@
       </div>
     </div>
 
-    <!-- TAB 3: PROBABILITY CHARTS & VISUAL ANALYTICS -->
+    <!-- TAB 3: PROBABILITY CHARTS -->
     <div id="tabContentAnalytics" class="hidden space-y-6">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="glass-card rounded-3xl p-5 border border-slate-800">
-          <h3 class="text-base font-bold text-white mb-3">Top 15 Số Có Tần Suất Cao Nhất</h3>
+          <h3 class="text-base font-bold text-white mb-1">Top 15 Số Có Tần Suất Cao Nhất</h3>
+          <p class="text-xs text-slate-400 mb-3">Thống kê tổng số nháy xuất hiện trong khung phân tích</p>
           <div class="relative h-72 w-full"><canvas id="chartTopFrequency"></canvas></div>
         </div>
         <div class="glass-card rounded-3xl p-5 border border-slate-800">
-          <h3 class="text-base font-bold text-white mb-3">Top 12 Số Có Xác Suất Về ≥ 2 Nháy Cao Nhất (%)</h3>
+          <h3 class="text-base font-bold text-white mb-1">Top 12 Số Có Xác Suất Về ≥ 2 Nháy Cao Nhất (%)</h3>
+          <p class="text-xs text-slate-400 mb-3">Kết hợp tần suất nháy kép, cầu vị trí và quán tính EMA</p>
           <div class="relative h-72 w-full"><canvas id="chartTwoHitProb"></canvas></div>
         </div>
         <div class="glass-card rounded-3xl p-5 border border-slate-800">
-          <h3 class="text-base font-bold text-white mb-3">Phân Bố Tần Suất Đầu Lô (0–9) & Đuôi Lô (0–9)</h3>
+          <h3 class="text-base font-bold text-white mb-1">Phân Bố Tần Suất Đầu Lô (0–9) & Đuôi Lô (0–9)</h3>
+          <p class="text-xs text-slate-400 mb-3">Đường cong cân bằng chạm đầu và chạm đuôi</p>
           <div class="relative h-72 w-full"><canvas id="chartHeadTailDist"></canvas></div>
         </div>
         <div class="glass-card rounded-3xl p-5 border border-slate-800">
-          <h3 class="text-base font-bold text-white mb-3">Phân Bố Chữ Số Hàng Trăm (Càng 0–9)</h3>
+          <h3 class="text-base font-bold text-white mb-1">Phân Bố Chữ Số Hàng Trăm (Càng 0–9)</h3>
+          <p class="text-xs text-slate-400 mb-3">Cơ sở ghép bộ 3 Càng Đề và 3 Càng Lô VIP</p>
           <div class="relative h-72 w-full"><canvas id="chartThreeCangDist"></canvas></div>
         </div>
       </div>
@@ -700,6 +721,7 @@
         <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-slate-800">
           <div>
             <h3 class="text-lg font-bold text-white">Ma Trận Xác Suất Thống Kê Toàn Bộ 100 Số (00–99)</h3>
+            <p class="text-xs text-slate-400">Tra cứu toàn diện chỉ số EMA, độ gan, điểm BTL và điểm BTĐ của từng con số</p>
           </div>
           <div class="flex flex-wrap items-center gap-2">
             <button id="btnFilterDanDeOnly" class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 text-xs font-bold transition cursor-pointer">
@@ -748,6 +770,7 @@
       <div class="flex items-center justify-between pb-3 border-b border-slate-800">
         <div>
           <h3 class="text-lg font-bold text-white">Quản Lý & Nạp Trực Tiếp Từ XSKT.COM.VN</h3>
+          <p class="text-xs text-slate-400">Dữ liệu được lưu bền vững vào trình duyệt và tự động cập nhật bộ số</p>
         </div>
         <button id="btnCloseModal" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-bold cursor-pointer">✕</button>
       </div>
@@ -772,7 +795,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
           <div>
             <label class="block text-slate-400 mb-1">Ngày mở thưởng</label>
-            <input id="inputDrawDate" type="date" value="2026-11-02" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-white font-mono-num" />
+            <input id="inputDrawDate" type="date" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-white font-mono-num" />
           </div>
           <div>
             <label class="block text-slate-400 mb-1">Giải Đặc Biệt (5 số)</label>
@@ -785,7 +808,7 @@
         </div>
         <div class="text-xs">
           <label class="block text-slate-400 mb-1">25 giải còn lại (cách nhau bằng dấu cách):</label>
-          <textarea id="inputOtherPrizes" rows="2" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-slate-200 font-mono-num"></textarea>
+          <textarea id="inputOtherPrizes" rows="2" placeholder="VD: 74737 09040 10506 66698..." class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-700 text-slate-200 font-mono-num"></textarea>
         </div>
         <div class="flex items-center justify-end gap-2">
           <button id="btnSaveManualDraw" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition cursor-pointer">
@@ -877,11 +900,28 @@
     </div>
   </div>
 
+  <footer class="border-t border-slate-900 bg-slate-950/80 py-4 px-4 sm:px-6 text-center text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+      <span>XSMB QuantPro v6.1 — Động cơ phân tích xác suất & kiểm định Walk-Forward Backtesting</span>
+      <span>Tự động lập lịch quét 18:15–18:40 & chốt bộ số mỗi ngày</span>
+    </div>
+  </footer>
+
   <script>
     // =========================================================================
-    // 1. DATASET CHUẨN XSKT
+    // 1. DATASET CHUẨN XSKT (31 KỲ MỞ THƯỞNG LIÊN TIẾP: 12/10/2026 -> 11/11/2026)
     // =========================================================================
     const INITIAL_XSMB_DATA = [
+      { date: "2026-11-11", dayName: "Thứ Tư", province: "Bắc Ninh", code: "1LB 2LB 4LB 8LB 10LB 13LB", special: "74129", prize1: "97579", prize2: ["20960", "11980"], prize3: ["13449", "30793", "18746", "86606", "00972", "26471"], prize4: ["1760", "9505", "3676", "7568"], prize5: ["1494", "1478", "5404", "5724", "9888", "5597"], prize6: ["714", "093", "910"], prize7: ["51", "34", "12", "95"] },
+      { date: "2026-11-10", dayName: "Thứ Ba", province: "Quảng Ninh", code: "2LA 7LA 8LA 12LA 13LA 14LA", special: "73683", prize1: "25992", prize2: ["46401", "80718"], prize3: ["34541", "62689", "58806", "26594", "11823", "33335"], prize4: ["8889", "8400", "5739", "5668"], prize5: ["6370", "8957", "4414", "5050", "6394", "7747"], prize6: ["868", "593", "607"], prize7: ["14", "00", "83", "56"] },
+      { date: "2026-11-09", dayName: "Thứ Hai", province: "Hà Nội", code: "9KZ 7KZ 8KZ 10KZ 13KZ 12KZ 16KZ 19KZ", special: "03372", prize1: "38696", prize2: ["30610", "92390"], prize3: ["69375", "98904", "81351", "88131", "25712", "14883"], prize4: ["4981", "9077", "0426", "9458"], prize5: ["4388", "3920", "9588", "7625", "0496", "9953"], prize6: ["672", "386", "632"], prize7: ["92", "59", "52", "83"] },
+      { date: "2026-11-08", dayName: "Chủ Nhật", province: "Thái Bình", code: "12KY 7KY 13KY 6KY 5KY 3KY", special: "38926", prize1: "80190", prize2: ["38938", "92201"], prize3: ["17156", "34059", "24517", "10870", "99607", "55628"], prize4: ["4697", "6832", "4405", "0404"], prize5: ["5728", "6604", "0245", "3796", "1479", "0444"], prize6: ["008", "982", "851"], prize7: ["47", "87", "89", "41"] },
+      { date: "2026-11-07", dayName: "Thứ Bảy", province: "Nam Định", code: "2KX 1KX 6KX 9KX 8KX 11KX", special: "95014", prize1: "68396", prize2: ["89608", "87511"], prize3: ["76577", "44956", "40190", "88362", "52004", "77514"], prize4: ["5999", "0863", "3360", "3300"], prize5: ["3357", "7371", "3434", "4723", "7726", "9273"], prize6: ["363", "153", "462"], prize7: ["86", "16", "12", "43"] },
+      { date: "2026-11-06", dayName: "Thứ Sáu", province: "Hải Phòng", code: "3KV 8KV 12KV 7KV 15KV 4KV", special: "62477", prize1: "07782", prize2: ["37310", "33487"], prize3: ["73422", "87613", "40529", "30472", "61706", "48434"], prize4: ["8619", "2884", "4634", "4428"], prize5: ["3078", "3606", "6499", "9019", "3569", "0064"], prize6: ["474", "552", "252"], prize7: ["93", "70", "78", "73"] },
+      { date: "2026-11-05", dayName: "Thứ Năm", province: "Hà Nội", code: "13KU 8KU 9KU 4KU 15KU 3KU", special: "24502", prize1: "42500", prize2: ["77123", "96856"], prize3: ["45481", "78735", "87130", "38949", "90793", "85519"], prize4: ["7734", "9571", "2907", "3433"], prize5: ["3652", "6583", "9594", "3130", "4944", "7540"], prize6: ["434", "594", "167"], prize7: ["63", "53", "03", "16"] },
+      { date: "2026-11-04", dayName: "Thứ Tư", province: "Bắc Ninh", code: "3KT 1KT 2KT 6KT 11KT 12KT", special: "53046", prize1: "03675", prize2: ["54864", "65886"], prize3: ["32046", "83248", "15287", "25240", "05876", "93383"], prize4: ["1987", "0584", "3226", "6117"], prize5: ["1302", "2459", "4467", "4517", "2624", "4490"], prize6: ["888", "762", "417"], prize7: ["79", "13", "35", "92"] },
+      { date: "2026-11-03", dayName: "Thứ Ba", province: "Quảng Ninh", code: "11KS 4KS 12KS 6KS 13KS 9KS", special: "74446", prize1: "97971", prize2: ["74724", "08655"], prize3: ["10986", "36994", "23313", "64210", "48290", "01411"], prize4: ["1316", "3347", "3790", "4394"], prize5: ["9901", "0271", "7550", "4214", "9094", "0665"], prize6: ["256", "951", "214"], prize7: ["00", "13", "98", "34"] },
+      { date: "2026-11-02", dayName: "Thứ Hai", province: "Hà Nội", code: "7KR 6KR 2KR 9KR 11KR 15KR", special: "80129", prize1: "26381", prize2: ["30162", "73724"], prize3: ["77283", "93299", "49037", "97022", "21534", "40811"], prize4: ["1743", "4810", "4564", "0309"], prize5: ["9025", "4053", "3097", "4279", "0472", "6288"], prize6: ["945", "533", "795"], prize7: ["76", "64", "06", "17"] },
       { date: "2026-11-01", dayName: "Chủ Nhật", province: "Thái Bình", code: "1KQ 3KQ 4KQ 6KQ 7KQ 10KQ", special: "03917", prize1: "33288", prize2: ["74737", "09040"], prize3: ["10506", "66698", "79124", "58317", "43449", "13362"], prize4: ["0487", "0626", "7452", "9069"], prize5: ["8909", "7340", "9774", "7006", "1007", "3279"], prize6: ["481", "411", "189"], prize7: ["54", "16", "03", "91"] },
       { date: "2026-10-31", dayName: "Thứ Bảy", province: "Nam Định", code: "3KP 6KP 8KP 9KP 10KP 13KP", special: "28457", prize1: "58348", prize2: ["37364", "03797"], prize3: ["57644", "81204", "58908", "10924", "09114", "44428"], prize4: ["4040", "0770", "6764", "7770"], prize5: ["8634", "2951", "6836", "4597", "9355", "0320"], prize6: ["846", "632", "747"], prize7: ["78", "53", "31", "46"] },
       { date: "2026-10-30", dayName: "Thứ Sáu", province: "Hải Phòng", code: "1KN 2KN 3KN 6KN 12KN 15KN", special: "69259", prize1: "87081", prize2: ["71863", "38253"], prize3: ["08452", "03706", "11542", "49304", "76503", "19314"], prize4: ["3423", "3537", "1570", "9612"], prize5: ["8560", "8247", "2833", "8165", "5171", "6275"], prize6: ["857", "236", "824"], prize7: ["94", "77", "48", "25"] },
@@ -905,10 +945,21 @@
       { date: "2026-10-12", dayName: "Thứ Hai", province: "Hà Nội", code: "5HR-1HR-2HR-13HR-12HR-3HR", special: "38287", prize1: "32680", prize2: ["12824", "56761"], prize3: ["18337", "43868", "08556", "15458", "12206", "70045"], prize4: ["1882", "0875", "9096", "8272"], prize5: ["5888", "6187", "9926", "3016", "8724", "7781"], prize6: ["957", "840", "830"], prize7: ["49", "86", "38", "75"] }
     ];
 
+    // Dữ liệu Cầu Nhiều Nháy Live từ xskt.com.vn cho ngày 12/11/2026
+    const DEFAULT_XSKT_LIVE_MULTI_HITS = [
+      { num: "00", streak: 3, count: 2, source: "XSKT Live Cầu 3 Ngày" },
+      { num: "69", streak: 3, count: 2, source: "XSKT Live Cầu 3 Ngày + Pascal" },
+      { num: "05", streak: 2, count: 1, source: "XSKT Live Cầu 2 Ngày" },
+      { num: "14", streak: 2, count: 1, source: "XSKT Live Cầu 2 Ngày" },
+      { num: "24", streak: 2, count: 1, source: "XSKT Live Cầu 2 Ngày" },
+      { num: "28", streak: 2, count: 1, source: "XSKT Live Cầu 2 Ngày" }
+    ];
+
     // =========================================================================
-    // 2. STATE & STORAGE ENGINE
+    // 2. STATE, STORAGE & DAILY AUTO-SCHEDULER ENGINE
     // =========================================================================
-    const STORAGE_KEY = "xsmb_quantpro_v6_adaptive";
+    const STORAGE_KEY = "xsmb_quantpro_v6_2_daily";
+    const DAILY_STATE_KEY = "xsmb_quantpro_daily_checkpoint_v62";
     let xsmbHistory = [];
     let selectedDrawIndex = 0;
     let currentDigitMode = "full";
@@ -916,8 +967,17 @@
     let currentStats = null;
     let filterDanDeOnlyActive = false;
     let auditRecords = [];
-    let xsktLiveMultiHitList = [];
+    let xsktLiveMultiHitList = [...DEFAULT_XSKT_LIVE_MULTI_HITS];
     let charts = { topFreq: null, twoHit: null, headTail: null, threeCang: null };
+    let isSyncInProgress = false;
+    let lastSyncTimestamp = null;
+
+    function getLocalIsoDate(dateObj = new Date()) {
+      const y = dateObj.getFullYear();
+      const m = String(dateObj.getMonth() + 1).padStart(2, "0");
+      const d = String(dateObj.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
 
     function getDayNameVN(dateStr) {
       const parts = dateStr.split("-");
@@ -984,6 +1044,27 @@
       return flat.slice(0, count);
     }
 
+    function parseXsktMultiHitHtml(htmlString) {
+      const doc = new DOMParser().parseFromString(htmlString, "text/html");
+      const candidates = [];
+      doc.querySelectorAll("table tr").forEach(tr => {
+        const text = tr.textContent.trim();
+        const matches = text.match(/\b(\d{2})\b/g);
+        const streakMatch = text.match(/(\d+)\s*(ngày|kỳ|ngay)/i);
+        const streak = streakMatch ? parseInt(streakMatch[1], 10) : 2;
+        if (matches) {
+          matches.forEach(num => {
+            if (!text.includes(`G.${num}`)) {
+              const ex = candidates.find(c => c.num === num);
+              if (ex) { ex.count++; ex.streak = Math.max(ex.streak, streak); }
+              else candidates.push({ num, streak, count: 1, source: `XSKT Live Cầu ${streak} Ngày` });
+            }
+          });
+        }
+      });
+      return candidates.sort((a, b) => b.streak - a.streak || b.count - a.count);
+    }
+
     function parseXsktHtml(htmlString) {
       const doc = new DOMParser().parseFromString(htmlString, "text/html");
       const parsedDraws = [];
@@ -1019,30 +1100,15 @@
       return parsedDraws;
     }
 
-    function parseXsktMultiHitHtml(htmlString) {
-      const doc = new DOMParser().parseFromString(htmlString, "text/html");
-      const candidates = [];
-      doc.querySelectorAll("table tr").forEach(tr => {
-        const text = tr.textContent.trim();
-        const matches = text.match(/\b(\d{2})\b/g);
-        const streakMatch = text.match(/(\d+)\s*(ngày|kỳ|ngay)/i);
-        const streak = streakMatch ? parseInt(streakMatch[1], 10) : 3;
-        if (matches) {
-          matches.forEach(num => {
-            if (!text.includes(`G.${num}`)) {
-              const ex = candidates.find(c => c.num === num);
-              if (ex) { ex.count++; ex.streak = Math.max(ex.streak, streak); }
-              else candidates.push({ num, streak, count: 1 });
-            }
-          });
-        }
-      });
-      return candidates.sort((a, b) => b.streak - a.streak || b.count - a.count);
-    }
-
     async function syncFromXsktLive(showToastOnFinish = false) {
+      if (isSyncInProgress) return;
+      isSyncInProgress = true;
       const syncBadgeText = document.getElementById("syncBadgeText");
-      if (syncBadgeText) syncBadgeText.textContent = "Đang đồng bộ XSKT...";
+      const syncDot = document.getElementById("syncDot");
+      if (syncBadgeText) syncBadgeText.textContent = "Đang lấy số XSKT...";
+      if (syncDot) syncDot.classList.add("animate-ping");
+
+      const prevLatestDate = xsmbHistory[0]?.date || "";
       const endpoints = [
         `https://api.allorigins.win/raw?url=${encodeURIComponent(XSKT_TARGET_URL)}`,
         `https://corsproxy.io/?url=${encodeURIComponent(XSKT_TARGET_URL)}`
@@ -1050,22 +1116,98 @@
       for (const ep of endpoints) {
         try {
           const ctrl = new AbortController();
-          setTimeout(() => ctrl.abort(), 3500);
+          const timer = setTimeout(() => ctrl.abort(), 3500);
           const res = await fetch(ep, { signal: ctrl.signal });
+          clearTimeout(timer);
           if (res.ok) {
             const parsed = parseXsktHtml(await res.text());
             if (parsed.length > 0) { mergeDeals(xsmbHistory, parsed); break; }
           }
         } catch (e) {}
       }
-      if (syncBadgeText) syncBadgeText.textContent = "Live XSKT v6.0 ✓";
-      document.getElementById("syncDot")?.classList.remove("animate-ping");
-      refreshAllUI();
-      if (showToastOnFinish) showToast("Đã làm mới dữ liệu & tái tối ưu mô hình v6.0!");
+
+      // Quét đồng bộ Cầu Nhiều Nháy Live từ xskt.com.vn
+      const multiEndpoints = [
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(XSKT_MULTI_HIT_URL)}`,
+        `https://corsproxy.io/?url=${encodeURIComponent(XSKT_MULTI_HIT_URL)}`
+      ];
+      for (const ep of multiEndpoints) {
+        try {
+          const ctrl = new AbortController();
+          const timer = setTimeout(() => ctrl.abort(), 3500);
+          const res = await fetch(ep, { signal: ctrl.signal });
+          clearTimeout(timer);
+          if (res.ok) {
+            const parsedMulti = parseXsktMultiHitHtml(await res.text());
+            if (parsedMulti.length > 0) { xsktLiveMultiHitList = parsedMulti; break; }
+          }
+        } catch (e) {}
+      }
+
+      lastSyncTimestamp = new Date();
+      const timeStr = lastSyncTimestamp.toLocaleTimeString("vi-VN");
+      const newLatestDate = xsmbHistory[0]?.date || "";
+      const hasNewDraw = newLatestDate && newLatestDate !== prevLatestDate;
+
+      if (syncBadgeText) syncBadgeText.textContent = `Auto-Daily (${timeStr})`;
+      if (syncDot) syncDot.classList.remove("animate-ping");
+
+      const schedulerBadge = document.getElementById("dailySchedulerBadge");
+      if (schedulerBadge) {
+        schedulerBadge.innerHTML = `<span>🕒 Cập nhật gần nhất: ${timeStr} (${formatDateVN(getLocalIsoDate())})</span>`;
+      }
+
+      refreshAllUI(hasNewDraw);
+      isSyncInProgress = false;
+
+      if (hasNewDraw) {
+        showToast(`🎉 Đã cập nhật kỳ mở thưởng mới (${formatDateVN(newLatestDate)}) và chốt bộ số mới!`);
+      } else if (showToastOnFinish) {
+        showToast(`Đã đồng bộ dữ liệu & làm mới bộ số lúc ${timeStr}!`);
+      }
+    }
+
+    function startDailyAutoScheduler() {
+      let lastTriggerMinuteKey = "";
+
+      setInterval(() => {
+        const now = new Date();
+        const hour = now.getHours();
+        const minute = now.getMinutes();
+        const second = now.getSeconds();
+        const todayIso = getLocalIsoDate(now);
+        const minuteKey = `${todayIso}_${hour}:${minute}`;
+
+        // 1. Khung giờ vàng mở thưởng trực tiếp (18:15 -> 18:40): Quét mỗi 30 giây
+        const isLiveDrawWindow = (hour === 18 && minute >= 15 && minute <= 40);
+        if (isLiveDrawWindow && (second === 0 || second === 30)) {
+          syncFromXsktLive(false);
+        }
+
+        // 2. Mốc chốt bộ số chuẩn mỗi ngày lúc 18:35 (sau khi có đầy đủ 27 giải)
+        if (hour === 18 && minute === 35 && lastTriggerMinuteKey !== minuteKey) {
+          lastTriggerMinuteKey = minuteKey;
+          try { localStorage.setItem(DAILY_STATE_KEY, todayIso); } catch (e) {}
+          syncFromXsktLive(true);
+        }
+
+        // 3. Mốc sang ngày mới (00:01) hoặc khi mở tab sang ngày mới
+        let savedDay = null;
+        try { savedDay = localStorage.getItem(DAILY_STATE_KEY); } catch (e) {}
+        if (savedDay !== todayIso && !isSyncInProgress) {
+          try { localStorage.setItem(DAILY_STATE_KEY, todayIso); } catch (e) {}
+          syncFromXsktLive(false);
+        }
+
+        // 4. Đồng bộ nền định kỳ mỗi 15 phút ngoài giờ quay
+        if (!isLiveDrawWindow && minute % 15 === 0 && second === 5) {
+          syncFromXsktLive(false);
+        }
+      }, 1000);
     }
 
     // =========================================================================
-    // 4. THUẬT TOÁN v6.0: FULL-MATRIX BRIDGES + EMA MOMENTUM + ANTI-GAN
+    // 4. THUẬT TOÁN v6.1: FULL-MATRIX BRIDGES (107x107) + EMA MOMENTUM + ANTI-GAN
     // =========================================================================
     function computeStatistics(windowDraws, strategyMode = "adaptive") {
       const N = windowDraws.length;
@@ -1076,7 +1218,7 @@
         numStats[num] = {
           num,
           totalHits: 0,
-          emaHits: 0,         // Trọng số mũ ưu tiên các kỳ gần nhất
+          emaHits: 0,
           daysAppeared: 0,
           multiHitDays: 0,
           specialHits: 0,
@@ -1088,7 +1230,7 @@
           probAtLeast1: 23.79,
           probAtLeast2: 2.95,
           markovBoost: 0,
-          bridgeStrength: 0,  // Điểm cộng từ cầu vị trí 107x107
+          bridgeStrength: 0,
           bridgeStreakMax: 0,
           btlScore: 0,
           btdScore: 0,
@@ -1101,14 +1243,13 @@
 
       const headCounts = Array(10).fill(0);
       const tailCounts = Array(10).fill(0);
-      // EMA Momentum cho Đầu ĐB, Đuôi ĐB, Tổng ĐB (tránh bẫy Gambler's Fallacy)
       const emaSpHead = Array(10).fill(0);
       const emaSpTail = Array(10).fill(0);
       const emaSpSum = Array(10).fill(0);
       const cangHundredsCounts = Array(10).fill(0);
       const emaCangRecent = Array(10).fill(0);
 
-      const decay = 0.86; // Hệ số suy giảm mũ theo thời gian (kỳ mới nhất = 1.0)
+      const decay = 0.86;
 
       windowDraws.forEach((draw, dayIdx) => {
         const w = Math.pow(decay, dayIdx);
@@ -1127,12 +1268,10 @@
         const spT = Number(sp2[1]);
         const spS = (spH + spT) % 10;
 
-        // Quán tính chạm & tổng ĐB (chạm đang về nhiều gần đây có xu hướng giữ cầu)
         emaSpHead[spH] += w * 1.4;
         emaSpTail[spT] += w * 1.4;
         emaSpSum[spS] += w * 1.2;
 
-        // Thống kê Càng (hàng trăm)
         const threeDigits = getThreeDigitsOfDraw(draw);
         threeDigits.forEach(td => {
           const cDigit = Number(td[0]);
@@ -1165,26 +1304,22 @@
       });
 
       const latestDraw = windowDraws[0];
-      const latestLotos = getLotosOfDraw(latestDraw);
       const latestSp2 = String(latestDraw.special).slice(-2).padStart(2, "0");
 
-      // 1. Ma trận Markov bậc 1: Khi ĐB hôm trước về số/chạm X, ngày hôm sau thường ra gì?
+      // 1. Markov bậc 1 từ Giải ĐB
       for (let t = 1; t < N; t++) {
         const prevSp = String(windowDraws[t].special).slice(-2).padStart(2, "0");
         const nextDrawLotos = getLotosOfDraw(windowDraws[t - 1]);
         const nextSp = String(windowDraws[t - 1].special).slice(-2).padStart(2, "0");
 
-        // Nếu trùng chạm hoặc bóng dương/âm với ĐB hiện tại
         const isSameTouch = (prevSp[0] === latestSp2[0] || prevSp[1] === latestSp2[1] || prevSp[0] === latestSp2[1] || prevSp[1] === latestSp2[0]);
         if (isSameTouch) {
-          nextDrawLotos.forEach(target => {
-            numStats[target].markovBoost += 0.65;
-          });
+          nextDrawLotos.forEach(target => { numStats[target].markovBoost += 0.65; });
           if (numStats[nextSp]) numStats[nextSp].btdScore += 9.5;
         }
       }
 
-      // 2. Quét TOÀN DIỆN 100% Cầu Vị Trí (107 x 107 vị trí chữ số)
+      // 2. Quét 100% Cầu Vị Trí (107 x 107)
       function extractDigitPositions(draw) {
         const positions = [];
         const addPrize = (label, val) => {
@@ -1215,11 +1350,8 @@
             for (let t = 1; t < posDraws.length; t++) {
               const d1 = posDraws[t][i].digit;
               const d2 = posDraws[t][j].digit;
-              if (drawLotoSets[t - 1].has(`${d1}${d2}`) || drawLotoSets[t - 1].has(`${d2}${d1}`)) {
-                streak++;
-              } else {
-                break;
-              }
+              if (drawLotoSets[t - 1].has(`${d1}${d2}`) || drawLotoSets[t - 1].has(`${d2}${d1}`)) streak++;
+              else break;
             }
             if (streak >= 3) {
               const d1 = posDraws[0][i].digit;
@@ -1239,7 +1371,6 @@
       discoveredBridges.sort((a, b) => b.streak - a.streak);
       const topBridges = discoveredBridges.slice(0, 12);
 
-      // Cộng điểm hội tụ cho các con số có nhiều cầu vị trí cùng trỏ về (Consensus Voting)
       discoveredBridges.slice(0, 40).forEach(br => {
         const w = Math.pow(br.streak, 1.65);
         if (numStats[br.predNum]) {
@@ -1252,7 +1383,7 @@
         }
       });
 
-      // 3. Tháp Pascal & Kiểm tra hiệu lực cầu Pascal gần đây
+      // 3. Tháp Pascal
       const pascalBase = `${String(latestDraw.special).padStart(5, "0")}${String(latestDraw.prize1).padStart(5, "0")}`;
       const pascalRows = [pascalBase.split("").map(Number)];
       while (pascalRows[pascalRows.length - 1].length > 2) {
@@ -1264,7 +1395,7 @@
       const pascalPair = pascalRows[pascalRows.length - 1].join("");
       const pascalRev = pascalPair[1] + pascalPair[0];
 
-      // 4. Tính điểm Bạch Thủ Lô (BTL) chống lô gan & ưu tiên nhịp rơi vàng
+      // 4. Tính điểm Bạch Thủ Lô (BTL)
       const maxBridgeStr = Math.max(1, ...Object.values(numStats).map(s => s.bridgeStrength));
       const maxEmaHits = Math.max(1, ...Object.values(numStats).map(s => s.emaHits));
 
@@ -1281,16 +1412,13 @@
           st.stdCycle = 3.2;
         }
 
-        // Vùng nhịp rơi vàng của XSMB là nghỉ 1 -> 4 ngày (tránh bắt lô gan >= 6 ngày)
         let rhythmBonus = 0;
         if (st.currentGap >= 1 && st.currentGap <= 3) rhythmBonus = 1.0;
         else if (st.currentGap === 0 || st.currentGap === 4) rhythmBonus = 0.72;
         else if (st.currentGap === 5) rhythmBonus = 0.35;
-        else rhythmBonus = 0.05; // Phạt cực nặng lô gan >= 6 ngày
+        else rhythmBonus = 0.05;
 
-        // Phạt nặng nếu không xuất hiện lần nào trong khung (lô gan chết)
         const antiDeadPenalty = st.daysAppeared === 0 ? 0.1 : 1.0;
-
         const bridgeNorm = st.bridgeStrength / maxBridgeStr;
         const emaNorm = st.emaHits / maxEmaHits;
         const markovNorm = Math.min(1, st.markovBoost / 3.0);
@@ -1301,43 +1429,43 @@
         } else if (strategyMode === "momentum") {
           composite = (0.45 * emaNorm + 0.35 * rhythmBonus + 0.20 * bridgeNorm) * antiDeadPenalty;
         } else {
-          // Adaptive Ensemble: Cầu vị trí đồng thuận (45%) + Quán tính EMA (30%) + Nhịp rơi vàng (25%)
           composite = (0.45 * bridgeNorm + 0.30 * emaNorm + 0.15 * rhythmBonus + 0.10 * markovNorm) * antiDeadPenalty;
         }
 
-        // Thưởng nhẹ cho cặp Pascal nếu không bị gan
-        if ((st.num === pascalPair || st.num === pascalRev) && st.currentGap <= 5) {
-          composite += 0.08;
+        if ((st.num === pascalPair || st.num === pascalRev) && st.currentGap <= 5) composite += 0.08;
+
+        // Tích hợp Cầu Nhiều Nháy Live từ xskt.com.vn
+        const xsktLiveItem = xsktLiveMultiHitList.find(item => item.num === st.num);
+        if (xsktLiveItem) {
+          st.isXsktLiveCau = true;
+          st.cauNhieuNhayStreak = xsktLiveItem.streak || 2;
+          composite += 0.06 + (st.cauNhieuNhayStreak * 0.025);
         }
 
         st.btlScore = Math.min(99.2, Math.max(15.0, +(composite * 82 + 16).toFixed(1)));
         st.probAtLeast1 = Math.min(46.5, Math.max(10.5, +(20.5 + composite * 23.5).toFixed(2)));
 
-        // Xác suất về >= 2 nháy
         const baseP2 = (st.multiHitDays / Math.max(1, N)) * 45 + (bridgeNorm * 8.5) + (emaNorm * 4.5);
-        const xsktLiveItem = xsktLiveMultiHitList.find(item => item.num === st.num);
-        if (xsktLiveItem) {
-          st.isXsktLiveCau = true;
-          st.cauNhieuNhayStreak = xsktLiveItem.streak || 3;
-          st.probAtLeast2 = Math.min(26.5, +(baseP2 + 5.5).toFixed(2));
+        if (st.isXsktLiveCau) {
+          const liveBonus = st.cauNhieuNhayStreak >= 3 ? 6.8 : 4.2;
+          st.probAtLeast2 = Math.min(26.5, +(baseP2 + liveBonus).toFixed(2));
         } else {
           st.probAtLeast2 = Math.min(22.0, Math.max(1.5, +baseP2.toFixed(2)));
         }
 
-        if (st.currentGap >= 6) st.statusLabel = "Lô Gan (Loại)";
+        if (st.isXsktLiveCau) st.statusLabel = `Cầu 2N XSKT (${st.cauNhieuNhayStreak}N)`;
+        else if (st.currentGap >= 6) st.statusLabel = "Lô Gan (Loại)";
         else if (st.bridgeStreakMax >= 4) st.statusLabel = `Cầu Thông ${st.bridgeStreakMax}N`;
         else if (st.currentGap >= 1 && st.currentGap <= 3 && st.emaHits >= 1.5) st.statusLabel = "Điểm Rơi Vàng";
         else if (st.daysAppeared >= N * 0.33) st.statusLabel = "Quán Tính Mạnh";
         else st.statusLabel = "Nhịp Ổn Định";
       });
 
-      // 5. Tính điểm Bạch Thủ Đề & Dàn Đề 27 Số theo Quán Tính Chạm (Momentum) + Bạc Nhớ ĐB
-      // Lấy các chữ số từ Giải ĐB & G1 gần nhất làm cầu chạm động
+      // 5. Tính điểm Bạch Thủ Đề & Dàn Đề 27 Số
       const recentSpecials = windowDraws.slice(0, Math.min(4, N)).map(d => String(d.special).padStart(5, "0"));
       const dynamicTouchWeights = Array(10).fill(0);
       recentSpecials.forEach((sp, idx) => {
         const w = Math.pow(0.75, idx);
-        // Tâm giải ĐB (vị trí giữa) & 2 số cuối giải ĐB thường rơi lại chạm
         dynamicTouchWeights[Number(sp[2])] += 2.2 * w;
         dynamicTouchWeights[Number(sp[3])] += 2.5 * w;
         dynamicTouchWeights[Number(sp[4])] += 2.5 * w;
@@ -1348,14 +1476,11 @@
         const t = Number(st.num[1]);
         const sumD = (h + t) % 10;
 
-        // Quán tính chạm (thay thế hoàn toàn Gambler's Fallacy)
         const momentumTouch = (emaSpHead[h] + emaSpTail[t]) * 3.8 + (dynamicTouchWeights[h] + dynamicTouchWeights[t]) * 2.4;
         const momentumSum = emaSpSum[sumD] * 3.2;
         const bridgeSupport = st.bridgeStrength * 1.1;
-
-        // Số Đề vừa nổ hôm qua ít khi nổ lại ngay hôm sau (giảm nhiễu)
         const repeatSpecialPenalty = st.num === latestSp2 ? -35 : 0;
-        // Cộng điểm cho số bóng dương/âm của Đề hôm qua (VD: 17 -> bóng 62, 12, 67)
+
         const bongMap = { "0": "5", "1": "6", "2": "7", "3": "8", "4": "9", "5": "0", "6": "1", "7": "2", "8": "3", "9": "4" };
         const bong1 = bongMap[latestSp2[0]] + bongMap[latestSp2[1]];
         const bong2 = bongMap[latestSp2[0]] + latestSp2[1];
@@ -1363,34 +1488,17 @@
         const bongBonus = (st.num === bong1 || st.num === bong2 || st.num === bong3) ? 14.0 : 0;
 
         st.btdScore = +(
-          st.btdScore + // Giữ điểm Markov ĐB đã cộng ở bước 1
-          momentumTouch +
-          momentumSum +
-          bridgeSupport +
-          bongBonus +
-          repeatSpecialPenalty +
-          (st.btlScore * 0.22)
+          st.btdScore + momentumTouch + momentumSum + bridgeSupport + bongBonus + repeatSpecialPenalty + (st.btlScore * 0.22)
         ).toFixed(1);
       });
 
-      // Tuyển chọn Dàn Đề 27 số có điểm cao nhất
       const sortedByBtd = Object.values(numStats).sort((a, b) => b.btdScore - a.btdScore || b.btlScore - a.btlScore);
       const danDe27List = sortedByBtd.slice(0, 27).map(x => x.num);
       danDe27List.forEach(n => { if (numStats[n]) numStats[n].isDanDe27 = true; });
 
       return {
-        N,
-        numStats,
-        headCounts,
-        tailCounts,
-        cangHundredsCounts,
-        emaCangRecent,
-        topBridges,
-        pascalBase,
-        pascalRows,
-        pascalPair,
-        pascalRev,
-        danDe27List
+        N, numStats, headCounts, tailCounts, cangHundredsCounts, emaCangRecent,
+        topBridges, pascalBase, pascalRows, pascalPair, pascalRev, danDe27List
       };
     }
 
@@ -1424,25 +1532,14 @@
         const predDe8 = btdSorted.slice(0, 8).map(x => x.num);
         const predDanDe27 = simStats.danDe27List;
 
-        const twoHitSorted = [...allNums].sort((a, b) => b.probAtLeast2 - a.probAtLeast2);
-        const predTwoHit = twoHitSorted[0].num;
-
-        const cangScores = simStats.emaCangRecent
-          .map((cnt, digit) => ({ digit, cnt }))
-          .sort((a, b) => b.cnt - a.cnt);
-        const bestCang1 = cangScores[0].digit;
-        const bestCang2 = cangScores[1].digit;
-        const bestCang3 = cangScores[2].digit;
+        const cangScores = simStats.emaCangRecent.map((cnt, digit) => ({ digit, cnt })).sort((a, b) => b.cnt - a.cnt);
+        const bestCang1 = cangScores[0].digit, bestCang2 = cangScores[1].digit, bestCang3 = cangScores[2].digit;
 
         const pred3CangDe = `${bestCang1}${predBTD}`;
         const pred3CangLo = `${bestCang1}${predBTL}`;
         const pred3CangCombos = [
-          `${bestCang1}${predBTD}`,
-          `${bestCang2}${predBTD}`,
-          `${bestCang3}${predBTD}`,
-          `${bestCang1}${predBTL}`,
-          `${bestCang2}${predBTL}`,
-          `${bestCang1}${predBTL_backup[0]}`
+          `${bestCang1}${predBTD}`, `${bestCang2}${predBTD}`, `${bestCang3}${predBTD}`,
+          `${bestCang1}${predBTL}`, `${bestCang2}${predBTL}`, `${bestCang1}${predBTL_backup[0]}`
         ];
 
         const actualSpecial = actualDraw.special;
@@ -1459,53 +1556,26 @@
         let total3CangLoHits = 0;
         pred3CangCombos.forEach(cNum => {
           const hits = actualThreeDigits.filter(x => x === cNum).length;
-          if (hits > 0) {
-            comboHitsList.push(`${cNum} (${hits}n)`);
-            total3CangLoHits += hits;
-          }
+          if (hits > 0) { comboHitsList.push(`${cNum} (${hits}n)`); total3CangLoHits += hits; }
         });
-        const is3CangLoWin = total3CangLoHits > 0;
 
         const isDanDe27Win = predDanDe27.includes(actualDe);
         const isBtlWin = btlHitCount >= 1;
         const isStlWin = stlHitCount >= 1;
         const isBtdWin = predBTD === actualDe;
         const isDe8Win = predDe8.includes(actualDe);
-
-        const pnlDanDe27 = isDanDe27Win ? 720000 : -270000;
-        const pnlBtl = btlHitCount > 0 ? (btlHitCount * 990000 - 270000) : -270000;
-        const pnl3CangLo = total3CangLoHits > 0 ? (total3CangLoHits * 960000 - 138000) : -138000;
+        const is3CangLoWin = total3CangLoHits > 0;
 
         records.push({
-          date: actualDraw.date,
-          dayName: actualDraw.dayName,
-          province: actualDraw.province,
-          actualSpecial,
-          actualDe,
-          actual3CangDe,
-          actualPrize1: actualDraw.prize1,
-          predBTL,
-          predBTL_backup,
-          btlHitCount,
-          isBtlWin,
-          isStlWin,
-          predBTD,
-          predDe8,
-          isBtdWin,
-          isDe8Win,
-          predDanDe27,
-          isDanDe27Win,
-          predTwoHit,
-          pred3CangDe,
-          pred3CangLo,
-          pred3CangCombos,
-          is3CangDeWin,
-          is3CangLoWin,
-          total3CangLoHits,
-          comboHitsList,
-          pnlDanDe27,
-          pnlBtl,
-          pnl3CangLo
+          date: actualDraw.date, dayName: actualDraw.dayName, province: actualDraw.province,
+          actualSpecial, actualDe, actual3CangDe, actualPrize1: actualDraw.prize1,
+          predBTL, predBTL_backup, btlHitCount, isBtlWin, isStlWin,
+          predBTD, predDe8, isBtdWin, isDe8Win, predDanDe27, isDanDe27Win,
+          pred3CangDe, pred3CangLo, pred3CangCombos, is3CangDeWin, is3CangLoWin,
+          total3CangLoHits, comboHitsList,
+          pnlDanDe27: isDanDe27Win ? 720000 : -270000,
+          pnlBtl: btlHitCount > 0 ? (btlHitCount * 990000 - 270000) : -270000,
+          pnl3CangLo: total3CangLoHits > 0 ? (total3CangLoHits * 960000 - 138000) : -138000
         });
       }
 
@@ -1653,9 +1723,14 @@
       document.getElementById("auditModal3CangDe").textContent = record.pred3CangDe;
       document.getElementById("auditModal3CangLo").textContent = record.pred3CangLo;
       document.getElementById("auditModal3CangCombos").textContent = record.pred3CangCombos.join(", ");
+      const el3cBadge = document.getElementById("auditModal3CangBadge");
+      if (el3cBadge) {
+        el3cBadge.textContent = record.is3CangDeWin ? `✓ ĂN 3C ĐỀ` : record.is3CangLoWin ? `✓ NỔ 3C LÔ (${record.total3CangLoHits}n)` : `Trượt 3C`;
+        el3cBadge.className = `text-xs font-mono-num font-bold ${(record.is3CangDeWin || record.is3CangLoWin) ? 'text-emerald-400' : 'text-slate-500'}`;
+      }
       document.getElementById("auditModalDanDeGrid").innerHTML = record.predDanDe27.map(n => {
         const isHit = n === record.actualDe;
-        return `<div class="py-2 px-1 rounded-xl text-xs font-bold font-mono-num ${isHit ? 'bg-amber-400 text-slate-950 font-extrabold' : 'bg-slate-900 border border-slate-800 text-slate-300'}">${n}</div>`;
+        return `<div class="py-2 px-1 rounded-xl text-xs font-bold font-mono-num ${isHit ? 'bg-amber-400 text-slate-950 font-extrabold ring-2 ring-amber-300' : 'bg-slate-900 border border-slate-800 text-slate-300'}">${n}</div>`;
       }).join("");
       document.getElementById("auditModalDanDeMatchBadge").textContent = record.isDanDe27Win ? `✓ Khớp ${record.actualDe}` : `Trượt`;
       document.getElementById("btnCopyAuditDanDe").onclick = () => copyTextToClipboard(record.predDanDe27.join(", "), "Đã sao chép 27 số!");
@@ -1663,7 +1738,7 @@
     }
 
     // =========================================================================
-    // 6. RENDER GIAO DIỆN CHÍNH
+    // 6. RENDER GIAO DIỆN CHÍNH & ĐỒNG HỒ LỊCH TRÌNH MỖI NGÀY
     // =========================================================================
     function formatDateVN(dateStr) {
       const p = String(dateStr).split("-");
@@ -1687,14 +1762,18 @@
       if (currentStats) {
         const all = Object.values(currentStats.numStats);
         const topFreq = [...all].sort((a, b) => b.emaHits - a.emaHits)[0];
-        const topBr = currentStats.topBridges[0];
+        const live3Day = xsktLiveMultiHitList.filter(x => x.streak >= 3).map(x => x.num);
+        const live2Day = xsktLiveMultiHitList.filter(x => x.streak === 2).map(x => x.num);
+
         if (topFreq) {
           document.getElementById("kpiHotLoto").textContent = `Số ${topFreq.num} (${topFreq.totalHits} nháy)`;
           document.getElementById("kpiHotLotoSub").textContent = `Điểm quán tính EMA: ${topFreq.emaHits.toFixed(2)}`;
         }
-        if (topBr) {
-          document.getElementById("kpiMultiHitLeader").textContent = `Cặp ${topBr.predNum} - ${topBr.revNum}`;
-          document.getElementById("kpiMultiHitSub").textContent = `Vị trí ${topBr.pos1}+${topBr.pos2} thông ${topBr.streak} kỳ`;
+        if (live3Day.length > 0 || live2Day.length > 0) {
+          document.getElementById("kpiMultiHitLeader").textContent = live3Day.length > 0
+            ? `${live3Day.join(" , ")} (Cầu 3N)`
+            : `${live2Day.slice(0, 2).join(" , ")} (Cầu 2N)`;
+          document.getElementById("kpiMultiHitSub").textContent = `Cầu 2N: ${live2Day.join(", ") || "--"} • Pascal: ${currentStats.pascalPair}-${currentStats.pascalRev}`;
         }
       }
     }
@@ -1773,23 +1852,37 @@
       if (!currentStats) return;
       const all = Object.values(currentStats.numStats);
 
-      const latestDate = xsmbHistory[0]?.date || "2026-11-01";
-      const parts = latestDate.split("-").map(Number);
-      const nextD = new Date(parts[0], parts[1] - 1, parts[2] + 1);
-      const nextDateStr = `${nextD.getFullYear()}-${String(nextD.getMonth() + 1).padStart(2, "0")}-${String(nextD.getDate()).padStart(2, "0")}`;
+      const now = new Date();
+      const todayIso = getLocalIsoDate(now);
+      const latestDraw = xsmbHistory[0];
+      const latestDrawDate = latestDraw?.date || todayIso;
 
-      document.getElementById("predTargetDateLabel").textContent = `${formatDateVN(nextDateStr)} (${getProvinceByDate(nextDateStr)})`;
+      // Ngày dự đoán là Ngày Hiện Tại (nếu chưa có kết quả hôm nay) hoặc Ngày Mai (nếu hôm nay đã mở thưởng)
+      const isTodayAlreadyDrawn = (latestDrawDate === todayIso);
+      const targetD = new Date(now.getFullYear(), now.getMonth(), now.getDate() + (isTodayAlreadyDrawn ? 1 : 0));
+      const nextDateStr = getLocalIsoDate(targetD);
+
+      const targetTag = isTodayAlreadyDrawn ? "Ngày Kế Tiếp" : "Ngày Hiện Tại";
+      document.getElementById("predTargetDateLabel").textContent = `${formatDateVN(nextDateStr)} (${getDayNameVN(nextDateStr)} - ${getProvinceByDate(nextDateStr)})`;
+      const cutoffEl = document.getElementById("predStatsCutoffLabel");
+      if (cutoffEl && latestDraw) {
+        const relTag = isTodayAlreadyDrawn ? "Ngày Hiện Tại" : "Ngày Hiện Tại - 1";
+        cutoffEl.textContent = `${relTag}: ${formatDateVN(latestDraw.date)} (${latestDraw.dayName} - ${latestDraw.province}, ĐB: ${latestDraw.special})`;
+      }
+      const subtitleEl = document.getElementById("lastUpdatedSubtitle");
+      if (subtitleEl && latestDraw) {
+        subtitleEl.textContent = `Thống kê đến: ${formatDateVN(latestDraw.date)} (${isTodayAlreadyDrawn ? "Hôm nay" : "Ngày hiện tại - 1"}) • Dự đoán (${targetTag}): ${formatDateVN(nextDateStr)} • Quét Live 18:15–18:40 (30s/lần)`;
+      }
+
       document.getElementById("predSampleSizeLabel").textContent = currentStats.N;
       document.getElementById("predTotalBallsLabel").textContent = currentStats.N * 27;
 
       const btlRanked = [...all].sort((a, b) => b.btlScore - a.btlScore || b.bridgeStrength - a.bridgeStrength);
-      const topBTL = btlRanked[0];
-      const backup1 = btlRanked[1];
-      const backup2 = btlRanked[2];
+      const topBTL = btlRanked[0], backup1 = btlRanked[1], backup2 = btlRanked[2];
 
       document.getElementById("btlMainNumber").textContent = topBTL.num;
       document.getElementById("btlBackupNumbers").textContent = `${backup1.num} , ${backup2.num}`;
-      document.getElementById("btlConfidenceBadge").textContent = `Điểm v6: ${topBTL.btlScore}/100`;
+      document.getElementById("btlConfidenceBadge").textContent = `Điểm v6.2: ${topBTL.btlScore}/100`;
       document.getElementById("btlProbText").textContent = `${topBTL.probAtLeast1}%`;
       document.getElementById("btlCycleTag").textContent = `Nghỉ: ${topBTL.currentGap} ngày (Cầu thông: ${topBTL.bridgeStreakMax}N)`;
       document.getElementById("btlReasonText").innerHTML =
@@ -1797,8 +1890,7 @@
 
       const btdRanked = [...all].sort((a, b) => b.btdScore - a.btdScore);
       const topBTD = btdRanked[0];
-      const dH = Number(topBTD.num[0]);
-      const dT = Number(topBTD.num[1]);
+      const dH = Number(topBTD.num[0]), dT = Number(topBTD.num[1]);
 
       document.getElementById("btdMainNumber").textContent = topBTD.num;
       document.getElementById("btdTouchBadge").textContent = `Chạm ${dH} - ${dT}`;
@@ -1808,9 +1900,7 @@
       document.getElementById("btdHeadTailTag").textContent = `Đầu ${dH} / Đuôi ${dT}`;
 
       const cangScores = currentStats.emaCangRecent.map((cnt, digit) => ({ digit, cnt })).sort((a, b) => b.cnt - a.cnt);
-      const bestCang1 = cangScores[0].digit;
-      const bestCang2 = cangScores[1].digit;
-      const bestCang3 = cangScores[2].digit;
+      const bestCang1 = cangScores[0].digit, bestCang2 = cangScores[1].digit, bestCang3 = cangScores[2].digit;
 
       const combos3Cang = [
         `${bestCang1}${topBTD.num}`, `${bestCang2}${topBTD.num}`, `${bestCang3}${topBTD.num}`,
@@ -1828,14 +1918,19 @@
       const topTwoHit = twoHitRanked[0];
       document.getElementById("twoHitMainNumber").textContent = topTwoHit.num;
       document.getElementById("twoHitProbMain").textContent = `${topTwoHit.probAtLeast2}%`;
-      document.getElementById("twoHitPastCount").textContent = `${topTwoHit.multiHitDays} kỳ ≥2n`;
+      document.getElementById("twoHitPastCount").textContent = topTwoHit.isXsktLiveCau
+        ? `Cầu XSKT ${topTwoHit.cauNhieuNhayStreak} ngày`
+        : `${topTwoHit.multiHitDays} kỳ ≥2n`;
       document.getElementById("twoHitLambdaTag").textContent = `Vượt chuẩn: ${(topTwoHit.probAtLeast2 / 2.95).toFixed(1)}x`;
 
       document.getElementById("twoHitTopListContainer").innerHTML = twoHitRanked.slice(0, 4).map((item, idx) => `
         <div class="flex items-center justify-between text-xs gap-2">
-          <span class="font-mono-num font-bold text-white">#${idx + 1} Lô ${item.num}</span>
+          <div class="flex items-center gap-1 min-w-[102px]">
+            <span class="font-mono-num font-bold text-white">#${idx + 1} Lô ${item.num}</span>
+            ${item.isXsktLiveCau ? `<span class="px-1 rounded bg-amber-500/25 text-amber-300 text-[9px] font-bold">${item.cauNhieuNhayStreak}N</span>` : ""}
+          </div>
           <div class="flex-1 h-1.5 rounded-full bg-slate-800 overflow-hidden">
-            <div class="h-full bg-emerald-400" style="width: ${Math.min(100, item.probAtLeast2 * 4.5)}%"></div>
+            <div class="h-full bg-emerald-400" style="width: ${Math.min(100, item.probAtLeast2 * 4)}%"></div>
           </div>
           <span class="font-mono-num font-bold text-emerald-300">${item.probAtLeast2}%</span>
         </div>
@@ -1889,7 +1984,7 @@
         const isBtd = num === topBTDNum;
         return `<button class="dan-de-ball-btn flex flex-col items-center justify-center py-2 px-1 rounded-xl transition cursor-pointer ${
           isBtd ? 'bg-gradient-to-b from-amber-400 to-amber-600 text-slate-950 font-extrabold shadow-lg border border-amber-300'
-                : 'bg-slate-900 hover:bg-amber-500/20 text-white border border-slate-800'
+                : 'bg-slate-900 hover:bg-amber-500/20 text-white border border-slate-800 hover:border-amber-500/40'
         }" data-number="${num}">
           <span class="text-[9px] font-mono-num ${isBtd ? 'text-slate-900 font-bold' : 'text-slate-500'}">#${idx + 1}</span>
           <span class="text-base sm:text-lg font-mono-num font-extrabold mt-0.5">${num}</span>
@@ -1898,9 +1993,11 @@
 
       grid.querySelectorAll(".dan-de-ball-btn").forEach(btn => {
         btn.addEventListener("click", () => {
-          document.getElementById("matrixSearchInput").value = btn.getAttribute("data-number");
+          const n = btn.getAttribute("data-number");
+          document.getElementById("matrixSearchInput").value = n;
           document.getElementById("tabBtnMatrix").click();
           renderMatrixTable();
+          showToast(`Đang soi chỉ số con ${n} trong Ma Trận 00–99`);
         });
       });
     }
@@ -1914,7 +2011,7 @@
       if (query) list = list.filter(i => i.num.includes(query));
 
       list.sort((a, b) => {
-        if (sortKey === "btdScore") return b.btdScore - a.btdScore;
+        if (sortKey === "btdScore") return b.btdScore - a.btdScore || b.btlScore - a.btlScore;
         if (sortKey === "prob2Hits") return b.probAtLeast2 - a.probAtLeast2;
         if (sortKey === "totalHits") return b.totalHits - a.totalHits;
         if (sortKey === "gapDesc") return b.currentGap - a.currentGap;
@@ -1922,7 +2019,13 @@
         return b.btlScore - a.btlScore;
       });
 
-      document.getElementById("matrixTableBody").innerHTML = list.map(st => `
+      document.getElementById("matrixTableBody").innerHTML = list.map(st => {
+        let statusClass = "bg-slate-800 text-slate-300";
+        if (st.isDanDe27) statusClass = "bg-amber-500/20 text-amber-300 border border-amber-500/40 font-bold";
+        else if (st.statusLabel.includes("Cầu Thông")) statusClass = "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
+        else if (st.statusLabel.includes("Lô Gan")) statusClass = "bg-rose-500/20 text-rose-300 border border-rose-500/40";
+
+        return `
         <tr class="hover:bg-slate-900/60 transition ${st.isDanDe27 ? 'bg-amber-950/15' : ''}">
           <td class="py-2.5 px-3 text-center"><span class="inline-block w-9 py-1 rounded-lg ${st.isDanDe27 ? 'bg-amber-500 text-slate-950 font-extrabold' : 'bg-slate-900 border border-slate-700 font-bold text-white'}">${st.num}</span></td>
           <td class="py-2.5 px-3 text-right font-bold text-white">${st.totalHits}</td>
@@ -1934,21 +2037,27 @@
           <td class="py-2.5 px-3 text-right font-bold text-amber-300">${st.probAtLeast2}%</td>
           <td class="py-2.5 px-3 text-right font-bold text-rose-400">${st.btlScore}</td>
           <td class="py-2.5 px-3 text-right font-extrabold text-amber-400">${st.btdScore}</td>
-          <td class="py-2.5 px-3 text-center"><span class="px-2 py-0.5 rounded-full text-[11px] bg-slate-800 text-slate-300">${st.isDanDe27 ? '★ Dàn Đề 27' : st.statusLabel}</span></td>
+          <td class="py-2.5 px-3 text-center"><span class="px-2 py-0.5 rounded-full text-[11px] ${statusClass}">${st.isDanDe27 ? '★ Dàn Đề 27' : st.statusLabel}</span></td>
         </tr>
-      `).join("");
+      `;
+      }).join("");
     }
 
     function renderCharts() {
       if (!currentStats || typeof Chart === "undefined") return;
       const all = Object.values(currentStats.numStats);
+      const darkScales = {
+        x: { ticks: { color: "#94a3b8" }, grid: { color: "rgba(148,163,184,0.08)" } },
+        y: { beginAtZero: true, ticks: { color: "#94a3b8" }, grid: { color: "rgba(148,163,184,0.08)" } }
+      };
+      const darkLegend = { labels: { color: "#cbd5e1", font: { size: 11 } } };
 
       const top15 = [...all].sort((a, b) => b.totalHits - a.totalHits).slice(0, 15);
       if (charts.topFreq) charts.topFreq.destroy();
       charts.topFreq = new Chart(document.getElementById("chartTopFrequency").getContext("2d"), {
         type: "bar",
         data: { labels: top15.map(x => `Lô ${x.num}`), datasets: [{ label: "Tổng nháy", data: top15.map(x => x.totalHits), backgroundColor: "#f43f5e", borderRadius: 6 }] },
-        options: { responsive: true, maintainAspectRatio: false }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: darkLegend }, scales: darkScales }
       });
 
       const top12 = [...all].sort((a, b) => b.probAtLeast2 - a.probAtLeast2).slice(0, 12);
@@ -1956,7 +2065,7 @@
       charts.twoHit = new Chart(document.getElementById("chartTwoHitProb").getContext("2d"), {
         type: "bar",
         data: { labels: top12.map(x => `Số ${x.num}`), datasets: [{ label: "XS ≥ 2 Nháy (%)", data: top12.map(x => x.probAtLeast2), backgroundColor: "#10b981", borderRadius: 6 }] },
-        options: { responsive: true, maintainAspectRatio: false }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: darkLegend }, scales: darkScales }
       });
 
       if (charts.headTail) charts.headTail.destroy();
@@ -1965,18 +2074,18 @@
         data: {
           labels: ["0","1","2","3","4","5","6","7","8","9"],
           datasets: [
-            { label: "Đầu Lô", data: currentStats.headCounts, borderColor: "#f43f5e", tension: 0.35 },
-            { label: "Đuôi Lô", data: currentStats.tailCounts, borderColor: "#38bdf8", tension: 0.35 }
+            { label: "Đầu Lô", data: currentStats.headCounts, borderColor: "#f43f5e", backgroundColor: "rgba(244,63,94,0.15)", fill: true, tension: 0.35 },
+            { label: "Đuôi Lô", data: currentStats.tailCounts, borderColor: "#38bdf8", backgroundColor: "rgba(56,189,248,0.15)", fill: true, tension: 0.35 }
           ]
         },
-        options: { responsive: true, maintainAspectRatio: false }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: darkLegend }, scales: darkScales }
       });
 
       if (charts.threeCang) charts.threeCang.destroy();
       charts.threeCang = new Chart(document.getElementById("chartThreeCangDist").getContext("2d"), {
         type: "bar",
         data: { labels: ["0","1","2","3","4","5","6","7","8","9"], datasets: [{ label: "Càng (0–9)", data: currentStats.cangHundredsCounts, backgroundColor: "#a855f7", borderRadius: 6 }] },
-        options: { responsive: true, maintainAspectRatio: false }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: darkLegend }, scales: darkScales }
       });
     }
 
@@ -1991,25 +2100,31 @@
       const all = Object.values(currentStats.numStats);
       const btlRanked = [...all].sort((a, b) => b.btlScore - a.btlScore);
       const btdRanked = [...all].sort((a, b) => b.btdScore - a.btdScore);
-      const topBTL = btlRanked[0], topBTD = btdRanked[0];
+      const twoHitRanked = [...all].sort((a, b) => b.probAtLeast2 - a.probAtLeast2);
+      const topBTL = btlRanked[0], topBTD = btdRanked[0], top2Hit = twoHitRanked[0];
       const br0 = currentStats.topBridges[0] || { pos1: "G3.1[2]", pos2: "G5.2[4]", streak: 4, predNum: topBTL.num, revNum: topBTL.num };
       const br1 = currentStats.topBridges[1] || { pos1: "ĐB[1]", pos2: "G2.1[3]", streak: 3, predNum: btlRanked[1].num, revNum: btlRanked[1].num };
 
       graphNodes = [
-        { id: "src_db", label: `ĐB: ${latest.special}`, sub: `Đề (${latest.special.slice(-2)})`, tier: 1, x: 0.14, y: 0.20, r: 24, color: "#38bdf8", prob: "Nguồn GĐB", desc: `Giải ĐB kỳ trước ${latest.special}` },
-        { id: "src_pos1", label: `${br0.pos1}+${br0.pos2}`, sub: `Thông ${br0.streak} kỳ`, tier: 1, x: 0.14, y: 0.48, r: 24, color: "#60a5fa", prob: `Cầu ${br0.predNum}`, desc: `Cầu vị trí ${br0.pos1} + ${br0.pos2} thông ${br0.streak} kỳ báo ${br0.predNum}` },
-        { id: "src_pascal", label: `Pascal: ${currentStats.pascalPair}`, sub: `ĐB+G1 (${currentStats.pascalRev})`, tier: 1, x: 0.14, y: 0.78, r: 24, color: "#f59e0b", prob: "Pascal", desc: `Tháp Pascal ĐB+G1 hội tụ ${currentStats.pascalPair}` },
-        { id: "hub_bayes", label: "Cầu 107×107", sub: "Đồng thuận vị trí", tier: 2, x: 0.49, y: 0.30, r: 27, color: "#a855f7", prob: "Lớp 1", desc: `Quét toàn bộ 11,449 cặp vị trí giải thưởng` },
-        { id: "hub_markov", label: "EMA Momentum", sub: `Chạm ${topBTD.num[0]}-${topBTD.num[1]}`, tier: 2, x: 0.49, y: 0.70, r: 26, color: "#c084fc", prob: "Lớp 2", desc: `Quán tính chạm ĐB ngắn hạn + Bạc nhớ bóng dương/âm` },
-        { id: "dst_btl", label: `BTL: ${topBTL.num}`, sub: `Điểm: ${topBTL.btlScore}`, tier: 3, x: 0.85, y: 0.25, r: 30, color: "#f43f5e", prob: `${topBTL.probAtLeast1}%`, desc: `Bạch Thủ Lô VIP ${topBTL.num} (Lót: ${btlRanked[1].num}, ${btlRanked[2].num})` },
-        { id: "dst_btd", label: `BTĐ: ${topBTD.num}`, sub: `Dàn 27 Số VIP`, tier: 3, x: 0.85, y: 0.72, r: 29, color: "#f59e0b", prob: `Chạm ${topBTD.num[0]}-${topBTD.num[1]}`, desc: `Bạch Thủ Đề ${topBTD.num} & Dàn Đề 27 Số` }
+        { id: "src_db", label: `ĐB: ${latest.special}`, sub: `Đề (${latest.special.slice(-2)})`, tier: 1, x: 0.14, y: 0.18, r: 24, color: "#38bdf8", prob: "Nguồn GĐB", desc: `Giải ĐB kỳ trước (${latest.special}) kích hoạt ma trận chuyển trạng thái Markov & bóng dương/âm.` },
+        { id: "src_pos1", label: `${br0.pos1}+${br0.pos2}`, sub: `Thông ${br0.streak} kỳ`, tier: 1, x: 0.14, y: 0.46, r: 24, color: "#60a5fa", prob: `Cầu ${br0.predNum}`, desc: `Cầu vị trí ${br0.pos1} + ${br0.pos2} thông ${br0.streak} kỳ liên tiếp báo cặp ${br0.predNum} - ${br0.revNum}.` },
+        { id: "src_pascal", label: `Pascal: ${currentStats.pascalPair}`, sub: `ĐB+G1 (${currentStats.pascalRev})`, tier: 1, x: 0.14, y: 0.78, r: 24, color: "#f59e0b", prob: "Pascal", desc: `Tháp Pascal ĐB+G1 (${currentStats.pascalBase}) hội tụ cặp ${currentStats.pascalPair} - ${currentStats.pascalRev}.` },
+        { id: "hub_bayes", label: "Cầu 107×107", sub: "Đồng thuận vị trí", tier: 2, x: 0.49, y: 0.28, r: 27, color: "#a855f7", prob: "Lớp 1", desc: `Quét toàn bộ 11,449 cặp vị trí giải thưởng, lọc bỏ lô gan >= 6 ngày.` },
+        { id: "hub_markov", label: "EMA Momentum", sub: `Chạm ${topBTD.num[0]}-${topBTD.num[1]}`, tier: 2, x: 0.49, y: 0.70, r: 26, color: "#c084fc", prob: "Lớp 2", desc: `Quán tính chạm ĐB ngắn hạn (decay 0.86) + Bạc nhớ bóng dương/âm.` },
+        { id: "dst_btl", label: `BTL: ${topBTL.num}`, sub: `Điểm: ${topBTL.btlScore}`, tier: 3, x: 0.85, y: 0.20, r: 29, color: "#f43f5e", prob: `XS ${topBTL.probAtLeast1}%`, desc: `Bạch Thủ Lô VIP ${topBTL.num} (Lót: ${btlRanked[1].num}, ${btlRanked[2].num}).` },
+        { id: "dst_2hit", label: `2N: ${top2Hit.num}`, sub: `P(≥2): ${top2Hit.probAtLeast2}%`, tier: 3, x: 0.85, y: 0.50, r: 26, color: "#10b981", prob: `${top2Hit.probAtLeast2}%`, desc: `Ứng viên nổ >= 2 nháy mạnh nhất: Số ${top2Hit.num} (${top2Hit.multiHitDays} kỳ nổ kép).` },
+        { id: "dst_btd", label: `BTĐ: ${topBTD.num}`, sub: `Dàn 27 Số VIP`, tier: 3, x: 0.85, y: 0.80, r: 29, color: "#f59e0b", prob: `Chạm ${topBTD.num[0]}-${topBTD.num[1]}`, desc: `Bạch Thủ Đề ${topBTD.num} & Dàn Đề 27 Số Quant VIP.` }
       ];
 
       graphEdges = [
         { from: "src_db", to: "hub_markov", weight: 0.92, label: "Bạc nhớ ĐB", mode: "markov" },
+        { from: "src_db", to: "hub_bayes", weight: 0.78, label: "Lọc nhịp", mode: "markov" },
         { from: "src_pos1", to: "hub_bayes", weight: 0.96, label: `Thông ${br0.streak}N`, mode: "positional" },
+        { from: "src_pos1", to: "dst_btl", weight: 0.90, label: `Báo thẳng ${br0.predNum}`, mode: "positional" },
         { from: "src_pascal", to: "hub_markov", weight: 0.85, label: `Cầu ${currentStats.pascalPair}`, mode: "pascal" },
+        { from: "src_pascal", to: "dst_btd", weight: 0.82, label: `Đảo ${currentStats.pascalRev}`, mode: "pascal" },
         { from: "hub_bayes", to: "dst_btl", weight: 0.98, label: `Chốt ${topBTL.num}`, mode: "positional" },
+        { from: "hub_bayes", to: "dst_2hit", weight: 0.88, label: `2 Nháy ${top2Hit.num}`, mode: "positional" },
         { from: "hub_markov", to: "dst_btd", weight: 0.96, label: `Chốt ${topBTD.num}`, mode: "markov" }
       ];
 
@@ -2039,9 +2154,25 @@
     function updateGraphInspectorUI(nodeId) {
       const node = graphNodes.find(n => n.id === nodeId) || graphNodes[0];
       if (!node) return;
+      const tierNames = { 1: "Nguồn Dữ Liệu Kỳ Trước", 2: "Lõi Thuật Toán Hội Tụ", 3: "Số Dự Đoán Đích" };
+      document.getElementById("inspectorNodeTypeBadge").textContent = tierNames[node.tier] || "Nút Cầu";
       document.getElementById("inspectorNodeTitle").textContent = node.label;
       document.getElementById("inspectorNodeScore").textContent = node.prob;
       document.getElementById("inspectorNodeDesc").textContent = node.desc;
+
+      const connected = graphEdges.filter(e => e.from === node.id || e.to === node.id);
+      const listEl = document.getElementById("inspectorConnectedList");
+      if (listEl) {
+        listEl.innerHTML = connected.map(e => {
+          const otherId = e.from === node.id ? e.to : e.from;
+          const otherNode = graphNodes.find(n => n.id === otherId);
+          const dir = e.from === node.id ? "→" : "←";
+          return `<div class="px-2.5 py-1.5 rounded-lg bg-slate-950/60 border border-slate-800 flex items-center justify-between">
+            <span class="font-mono-num text-slate-200">${dir} <strong>${otherNode ? otherNode.label : otherId}</strong> (${e.label})</span>
+            <span class="font-mono-num text-emerald-400 font-bold">w=${Math.round(e.weight * 100)}%</span>
+          </div>`;
+        }).join("");
+      }
     }
 
     function drawBridgeNetworkCanvas() {
@@ -2060,26 +2191,71 @@
       ctx.fillStyle = "#060913";
       ctx.fillRect(0, 0, w, h);
 
-      graphEdges.filter(e => currentGraphMode === "all" || e.mode === currentGraphMode).forEach((edge, idx) => {
+      // Subtle background grid
+      ctx.strokeStyle = "rgba(148, 163, 184, 0.05)";
+      ctx.lineWidth = 1;
+      for (let x = 0; x < w; x += 32) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
+      for (let y = 0; y < h; y += 32) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+
+      const activeId = hoveredGraphNodeId || selectedGraphNodeId;
+      const visibleEdges = graphEdges.filter(e => currentGraphMode === "all" || e.mode === currentGraphMode);
+
+      visibleEdges.forEach((edge, idx) => {
         const n1 = graphNodes.find(n => n.id === edge.from), n2 = graphNodes.find(n => n.id === edge.to);
         if (!n1 || !n2) return;
         const x1 = n1.x * w, y1 = n1.y * h, x2 = n2.x * w, y2 = n2.y * h;
+        const cx1 = x1 + (x2 - x1) * 0.48, cy1 = y1;
+        const cx2 = x1 + (x2 - x1) * 0.52, cy2 = y2;
+        const isHighlighted = activeId && (edge.from === activeId || edge.to === activeId);
+
         ctx.beginPath();
         ctx.moveTo(x1, y1);
-        ctx.bezierCurveTo(x1 + (x2 - x1) * 0.5, y1, x1 + (x2 - x1) * 0.5, y2, x2, y2);
-        ctx.strokeStyle = "rgba(148, 163, 184, 0.35)";
-        ctx.lineWidth = 2;
+        ctx.bezierCurveTo(cx1, cy1, cx2, cy2, x2, y2);
+        const grad = ctx.createLinearGradient(x1, y1, x2, y2);
+        if (isHighlighted) {
+          grad.addColorStop(0, n1.color);
+          grad.addColorStop(1, n2.color);
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = 3;
+        } else {
+          grad.addColorStop(0, "rgba(100, 116, 139, 0.25)");
+          grad.addColorStop(1, "rgba(148, 163, 184, 0.35)");
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = 1.6;
+        }
         ctx.stroke();
+
+        // Moving pulse dot along curve
+        const t = ((graphPulsePhase * 0.012 + idx * 0.21) % 1);
+        const mt = 1 - t;
+        const px = mt * mt * mt * x1 + 3 * mt * mt * t * cx1 + 3 * mt * t * t * cx2 + t * t * t * x2;
+        const py = mt * mt * mt * y1 + 3 * mt * mt * t * cy1 + 3 * mt * t * t * cy2 + t * t * t * y2;
+        ctx.beginPath();
+        ctx.arc(px, py, isHighlighted ? 4 : 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = isHighlighted ? "#fbbf24" : n2.color;
+        ctx.fill();
       });
 
       graphNodes.forEach(node => {
         const nx = node.x * w, ny = node.y * h;
+        const isSelected = node.id === selectedGraphNodeId;
+        const isHovered = node.id === hoveredGraphNodeId;
+
+        const glowR = node.r + (isSelected || isHovered ? 12 : 6);
+        const radGrad = ctx.createRadialGradient(nx, ny, node.r * 0.3, nx, ny, glowR);
+        radGrad.addColorStop(0, node.color + "66");
+        radGrad.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.beginPath();
+        ctx.arc(nx, ny, glowR, 0, Math.PI * 2);
+        ctx.fillStyle = radGrad;
+        ctx.fill();
+
         ctx.beginPath();
         ctx.arc(nx, ny, node.r, 0, Math.PI * 2);
         ctx.fillStyle = "#0f172a";
         ctx.fill();
-        ctx.lineWidth = node.id === selectedGraphNodeId ? 3 : 2;
-        ctx.strokeStyle = node.id === selectedGraphNodeId ? "#fbbf24" : node.color;
+        ctx.lineWidth = isSelected || isHovered ? 3.2 : 2;
+        ctx.strokeStyle = isSelected ? "#fbbf24" : node.color;
         ctx.stroke();
 
         ctx.font = "700 11px 'JetBrains Mono', monospace";
@@ -2091,6 +2267,44 @@
         ctx.fillText(node.sub, nx, ny + 11);
       });
       ctx.restore();
+    }
+
+    function startGraphAnimationLoop() {
+      if (graphAnimFrameId) cancelAnimationFrame(graphAnimFrameId);
+      function step() {
+        graphPulsePhase = (graphPulsePhase + 1) % 10000;
+        drawBridgeNetworkCanvas();
+        graphAnimFrameId = requestAnimationFrame(step);
+      }
+      graphAnimFrameId = requestAnimationFrame(step);
+    }
+
+    function initGraphCanvasInteractions() {
+      const canvas = document.getElementById("bridgeNetworkCanvas");
+      if (!canvas) return;
+      const getHitNode = (clientX, clientY) => {
+        const rect = canvas.getBoundingClientRect();
+        const mx = clientX - rect.left, my = clientY - rect.top;
+        for (const node of graphNodes) {
+          const dx = mx - node.x * rect.width, dy = my - node.y * rect.height;
+          if (Math.sqrt(dx * dx + dy * dy) <= node.r + 6) return node;
+        }
+        return null;
+      };
+      canvas.addEventListener("mousemove", e => {
+        const hit = getHitNode(e.clientX, e.clientY);
+        hoveredGraphNodeId = hit ? hit.id : null;
+        canvas.style.cursor = hit ? "pointer" : "default";
+      });
+      canvas.addEventListener("mouseleave", () => { hoveredGraphNodeId = null; });
+      canvas.addEventListener("click", e => {
+        const hit = getHitNode(e.clientX, e.clientY);
+        if (hit) {
+          selectedGraphNodeId = hit.id;
+          updateGraphInspectorUI(hit.id);
+        }
+      });
+      window.addEventListener("resize", () => drawBridgeNetworkCanvas());
     }
 
     function refreshAllUI(animatePrediction = false) {
@@ -2128,30 +2342,73 @@
     }
 
     function updateCountdownTimer() {
-      const now = new Date(), target = new Date(now);
+      const now = new Date();
+      const hour = now.getHours();
+      const minute = now.getMinutes();
+      const isLiveDraw = (hour === 18 && minute >= 15 && minute <= 35);
+
+      const modeLabel = document.getElementById("kpiScheduleModeLabel");
+      const el = document.getElementById("kpiCountdown");
+      const infoEl = document.getElementById("kpiNextDrawInfo");
+
+      if (isLiveDraw) {
+        if (modeLabel) modeLabel.textContent = "🔴 ĐANG QUAY TRỰC TIẾP";
+        if (el) {
+          el.textContent = "LIVE 18:15";
+          el.classList.add("text-rose-400");
+          el.classList.remove("text-amber-400");
+        }
+        if (infoEl) infoEl.textContent = "Đang tự động quét XSKT mỗi 30 giây...";
+        return;
+      }
+
+      if (modeLabel) modeLabel.textContent = "Đếm Ngược Quay & Chốt Số";
+      if (el) {
+        el.classList.remove("text-rose-400");
+        el.classList.add("text-amber-400");
+      }
+
+      const target = new Date(now);
       target.setHours(18, 15, 0, 0);
       if (now >= target) target.setDate(target.getDate() + 1);
+
       const diff = Math.max(0, Math.floor((target - now) / 1000));
-      const el = document.getElementById("kpiCountdown");
-      if (el) el.textContent = `${String(Math.floor(diff / 3600)).padStart(2, "0")}:${String(Math.floor((diff % 3600) / 60)).padStart(2, "0")}:${String(diff % 60).padStart(2, "0")}`;
+      if (el) {
+        el.textContent = `${String(Math.floor(diff / 3600)).padStart(2, "0")}:${String(Math.floor((diff % 3600) / 60)).padStart(2, "0")}:${String(diff % 60).padStart(2, "0")}`;
+      }
+      if (infoEl) {
+        const nextIso = getLocalIsoDate(target);
+        infoEl.textContent = `Tự chốt bộ số ngày ${formatDateVN(nextIso)} lúc 18:35`;
+      }
     }
 
     window.addEventListener("DOMContentLoaded", () => {
+      const todayIso = getLocalIsoDate();
+      const dateInput = document.getElementById("inputDrawDate");
+      if (dateInput) dateInput.value = todayIso;
+
       loadStoredHistory();
       refreshAllUI(false);
       syncFromXsktLive(false);
       updateCountdownTimer();
       setInterval(updateCountdownTimer, 1000);
+      startDailyAutoScheduler();
+      initGraphCanvasInteractions();
+      startGraphAnimationLoop();
 
+      // Tab Navigation
       document.querySelectorAll(".nav-tab-btn").forEach(btn => {
         btn.addEventListener("click", () => {
           const targetTab = btn.getAttribute("data-tab");
           document.querySelectorAll(".nav-tab-btn").forEach(b => {
             b.classList.remove("bg-rose-600", "text-white", "font-semibold");
-            b.classList.add("text-slate-300", "font-medium");
+            b.classList.add("font-medium");
+            if (b.getAttribute("data-tab") === "audit") b.classList.add("text-emerald-400");
+            else if (b.getAttribute("data-tab") === "graph") b.classList.add("text-amber-300");
+            else b.classList.add("text-slate-300");
           });
+          btn.classList.remove("text-slate-300", "text-emerald-400", "text-amber-300", "font-medium");
           btn.classList.add("bg-rose-600", "text-white", "font-semibold");
-          btn.classList.remove("text-slate-300", "font-medium");
 
           document.getElementById("tabContentOverview").classList.toggle("hidden", targetTab !== "overview");
           document.getElementById("tabContentAudit").classList.toggle("hidden", targetTab !== "audit");
@@ -2165,36 +2422,71 @@
         });
       });
 
-      document.getElementById("btnGeneratePrediction").addEventListener("click", () => { refreshAllUI(true); showToast("Đã tính lại bộ số theo Engine v6.0!"); });
+      document.getElementById("btnGeneratePrediction").addEventListener("click", () => {
+        refreshAllUI(true);
+        showToast("Đã tái tính toán bộ số mới theo Engine v6.2!");
+      });
       document.getElementById("strategyModeSelect").addEventListener("change", () => refreshAllUI(true));
       document.getElementById("windowRangeSelect").addEventListener("change", () => refreshAllUI(true));
-      document.getElementById("btnCopyDanDe27Comma").addEventListener("click", () => currentStats && copyTextToClipboard(currentStats.danDe27List.join(", "), "Đã sao chép 27 số Đề!"));
-      document.getElementById("btnCopyDanDe27Space").addEventListener("click", () => currentStats && copyTextToClipboard(currentStats.danDe27List.join(" "), "Đã sao chép 27 số Đề!"));
+
+      document.getElementById("btnCopyDanDe27Comma").addEventListener("click", () => currentStats && copyTextToClipboard(currentStats.danDe27List.join(", "), "Đã sao chép 27 số Đề (phẩy)!"));
+      document.getElementById("btnCopyDanDe27Space").addEventListener("click", () => currentStats && copyTextToClipboard(currentStats.danDe27List.join(" "), "Đã sao chép 27 số Đề (cách)!"));
       document.getElementById("btnHighlightDanDeInMatrix").addEventListener("click", () => {
         document.getElementById("tabBtnMatrix").click();
         filterDanDeOnlyActive = true;
+        const btn = document.getElementById("btnFilterDanDeOnly");
+        btn.classList.add("bg-amber-500", "text-slate-950");
+        btn.classList.remove("bg-amber-500/20", "text-amber-300");
+        renderMatrixTable();
+        showToast("Đang lọc chỉ hiển thị 27 số trong Dàn Đề VIP!");
+      });
+
+      document.getElementById("btnFilterDanDeOnly").addEventListener("click", () => {
+        filterDanDeOnlyActive = !filterDanDeOnlyActive;
+        const btn = document.getElementById("btnFilterDanDeOnly");
+        if (filterDanDeOnlyActive) {
+          btn.classList.add("bg-amber-500", "text-slate-950");
+          btn.classList.remove("bg-amber-500/20", "text-amber-300");
+        } else {
+          btn.classList.remove("bg-amber-500", "text-slate-950");
+          btn.classList.add("bg-amber-500/20", "text-amber-300");
+        }
         renderMatrixTable();
       });
-      document.getElementById("btnFilterDanDeOnly").addEventListener("click", () => { filterDanDeOnlyActive = !filterDanDeOnlyActive; renderMatrixTable(); });
+
       document.getElementById("matrixSearchInput").addEventListener("input", renderMatrixTable);
       document.getElementById("matrixSortSelect").addEventListener("change", renderMatrixTable);
       document.getElementById("auditFilterMode")?.addEventListener("change", renderAuditSummaryAndTable);
       document.getElementById("auditSearchQuery")?.addEventListener("input", renderAuditSummaryAndTable);
-      document.getElementById("btnRerunAudit")?.addEventListener("click", () => { runBacktestAuditEngine(); showToast("Đã đối soát lại!"); });
+      document.getElementById("btnRerunAudit")?.addEventListener("click", () => { runBacktestAuditEngine(); showToast("Đã chạy lại kiểm định đối soát!"); });
       document.getElementById("btnCloseAuditModal")?.addEventListener("click", () => document.getElementById("auditDetailModal")?.classList.add("hidden"));
       document.getElementById("btnSyncNow").addEventListener("click", () => syncFromXsktLive(true));
+      document.getElementById("btnFetchXsktViaProxy")?.addEventListener("click", () => syncFromXsktLive(true));
       document.getElementById("btnOpenAddModal").addEventListener("click", () => document.getElementById("dataModal").classList.remove("hidden"));
       document.getElementById("btnCloseModal").addEventListener("click", () => document.getElementById("dataModal").classList.add("hidden"));
+
       document.getElementById("btnParseXsktHtml").addEventListener("click", () => {
         const parsed = parseXsktHtml(document.getElementById("inputRawXsktHtml").value || "");
-        if (parsed.length > 0) { mergeDeals(xsmbHistory, parsed); selectedDrawIndex = 0; refreshAllUI(true); document.getElementById("dataModal").classList.add("hidden"); showToast(`Đã nạp ${parsed.length} kỳ!`); }
+        if (parsed.length > 0) {
+          mergeDeals(xsmbHistory, parsed);
+          selectedDrawIndex = 0;
+          refreshAllUI(true);
+          document.getElementById("dataModal").classList.add("hidden");
+          showToast(`Đã bóc tách & nạp ${parsed.length} kỳ quay!`);
+        } else {
+          showToast("Không nhận diện được bảng kết quả hợp lệ!");
+        }
       });
+
       document.getElementById("btnSaveManualDraw").addEventListener("click", () => {
         const dateVal = document.getElementById("inputDrawDate").value;
         const spVal = (document.getElementById("inputSpecialPrize").value || "").trim();
         const g1Val = (document.getElementById("inputFirstPrize").value || "").trim() || "33288";
         const tokens = (document.getElementById("inputOtherPrizes").value || "").trim().split(/[\s,;]+/).filter(Boolean);
-        if (!dateVal || spVal.length < 2) return;
+        if (!dateVal || spVal.length < 2) {
+          showToast("Vui lòng nhập đầy đủ Ngày và Giải Đặc Biệt!");
+          return;
+        }
         const fb = xsmbHistory[0];
         mergeDeals(xsmbHistory, [{
           date: dateVal, dayName: getDayNameVN(dateVal), province: getProvinceByDate(dateVal), code: "USER",
@@ -2206,21 +2498,76 @@
           prize6: tokens.length >= 21 ? tokens.slice(18, 21) : fb.prize6,
           prize7: tokens.length >= 25 ? tokens.slice(21, 25) : fb.prize7
         }]);
-        selectedDrawIndex = 0; refreshAllUI(true); document.getElementById("dataModal").classList.add("hidden");
+        selectedDrawIndex = 0;
+        refreshAllUI(true);
+        document.getElementById("dataModal").classList.add("hidden");
+        showToast(`Đã lưu kết quả ngày ${formatDateVN(dateVal)}!`);
       });
+
       document.getElementById("drawDateSelect")?.addEventListener("change", e => { selectedDrawIndex = Number(e.target.value) || 0; renderSelectedDrawBoard(); });
       document.getElementById("btnPrevDraw")?.addEventListener("click", () => { if (selectedDrawIndex < xsmbHistory.length - 1) { selectedDrawIndex++; document.getElementById("drawDateSelect").value = selectedDrawIndex; renderSelectedDrawBoard(); } });
       document.getElementById("btnNextDraw")?.addEventListener("click", () => { if (selectedDrawIndex > 0) { selectedDrawIndex--; document.getElementById("drawDateSelect").value = selectedDrawIndex; renderSelectedDrawBoard(); } });
+
       document.querySelectorAll(".digit-mode-btn").forEach(btn => btn.addEventListener("click", () => {
         currentDigitMode = btn.getAttribute("data-digit-mode");
+        document.querySelectorAll(".digit-mode-btn").forEach(b => {
+          b.classList.remove("bg-rose-600", "text-white", "font-semibold");
+          b.classList.add("text-slate-400");
+        });
+        btn.classList.add("bg-rose-600", "text-white", "font-semibold");
+        btn.classList.remove("text-slate-400");
         renderSelectedDrawBoard();
       }));
+
+      document.querySelectorAll(".graph-mode-btn").forEach(btn => btn.addEventListener("click", () => {
+        currentGraphMode = btn.getAttribute("data-graph-mode") || "all";
+        document.querySelectorAll(".graph-mode-btn").forEach(b => {
+          b.classList.remove("bg-indigo-600", "text-white", "font-semibold");
+          b.classList.add("text-slate-300");
+        });
+        btn.classList.add("bg-indigo-600", "text-white", "font-semibold");
+        btn.classList.remove("text-slate-300");
+        drawBridgeNetworkCanvas();
+      }));
+
+      document.getElementById("btnAnimateGraphPulse")?.addEventListener("click", () => {
+        graphPulsePhase += 45;
+        buildBridgeNetworkData();
+        drawBridgeNetworkCanvas();
+        showToast("Đã kích xung cầu & quét lại ma trận 107×107!");
+      });
+
+      document.getElementById("btnExportGraphPng")?.addEventListener("click", () => {
+        const canvas = document.getElementById("bridgeNetworkCanvas");
+        if (!canvas) return;
+        const a = document.createElement("a");
+        a.href = canvas.toDataURL("image/png");
+        a.download = `DoThiCau_XSMB_${xsmbHistory[0]?.date || "graph"}.png`;
+        a.click();
+        showToast("Đã tải ảnh Sơ Đồ Cầu (.PNG)!");
+      });
+
+      document.getElementById("btnExportJson")?.addEventListener("click", () => {
+        const blob = new Blob([JSON.stringify(xsmbHistory, null, 2)], { type: "application/json" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `XSMB_Data_${xsmbHistory[0]?.date || "export"}.json`;
+        a.click();
+        showToast("Đã xuất tệp dữ liệu JSON!");
+      });
+
       document.getElementById("btnDownloadStandaloneWeb").addEventListener("click", () => {
         const blob = new Blob(["<!DOCTYPE html>\n" + document.documentElement.outerHTML], { type: "text/html;charset=utf-8" });
-        const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "XSMB_QuantPro_v6_Adaptive.html"; a.click();
+        const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "XSMB_QuantPro_v6_2_LiveDaily.html"; a.click();
+        showToast("Đã tải tệp HTML độc lập về máy!");
       });
+
       document.getElementById("btnResetDefaultData").addEventListener("click", () => {
-        localStorage.removeItem(STORAGE_KEY); xsmbHistory = [...INITIAL_XSMB_DATA]; selectedDrawIndex = 0; refreshAllUI(true); document.getElementById("dataModal").classList.add("hidden");
+        try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+        xsmbHistory = [...INITIAL_XSMB_DATA];
+        xsktLiveMultiHitList = [...DEFAULT_XSKT_LIVE_MULTI_HITS];
+        selectedDrawIndex = 0; refreshAllUI(true); document.getElementById("dataModal").classList.add("hidden");
+        showToast("Đã khôi phục dữ liệu chuẩn XSKT gốc (đến 11/11/2026)!");
       });
     });
   </script>
